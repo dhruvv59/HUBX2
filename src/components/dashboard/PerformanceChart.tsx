@@ -100,7 +100,7 @@ export function PerformanceChart({ initialData }: PerformanceChartProps) {
                             }}
                         />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 11 }} domain={[0, 100]} ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]} tickFormatter={(value) => `${value}%`} />
-                        <RechartsTooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value: number) => [`${value}%`, 'Score']} />
+                        <RechartsTooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} formatter={(value: any) => [`${value}%`, 'Score']} />
                         <Bar dataKey="score" radius={[6, 6, 6, 6]} label={{ position: 'top', fill: '#1f2937', fontSize: 12, fontWeight: 'bold', formatter: (val: any) => `${val}%` }}>
                             {data.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
