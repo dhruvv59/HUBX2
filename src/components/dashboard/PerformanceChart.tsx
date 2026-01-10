@@ -15,6 +15,14 @@ export function PerformanceChart({ initialData }: PerformanceChartProps) {
     const [activeTab, setActiveTab] = React.useState("Last Month");
     const [data, setData] = React.useState(initialData);
     const [dateRange, setDateRange] = React.useState({ from: "01.09.2025", to: "01.10.2025" });
+    const [isMobile, setIsMobile] = React.useState(false);
+
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // In a real app, this would trigger an API call
     const handleTabChange = (tab: string) => {
@@ -62,9 +70,9 @@ export function PerformanceChart({ initialData }: PerformanceChartProps) {
                 </div>
             </div>
 
-            <div className="h-[280px] w-full mt-4 pb-8">
+            <div className="h-[320px] w-full mt-4 pb-2">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} barSize={40} margin={{ bottom: 25 }}>
+                    <BarChart data={data} barSize={isMobile ? 24 : 40} margin={{ bottom: isMobile ? 60 : 25 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                         <XAxis
                             dataKey="name"
@@ -73,28 +81,34 @@ export function PerformanceChart({ initialData }: PerformanceChartProps) {
                             interval={0}
                             tick={(props) => {
                                 const { x, y, payload } = props;
+                                const isLong = payload.value.length > 10;
+                                const displayName = isMobile && isLong ? `${payload.value.substring(0, 8)}...` : payload.value;
+
                                 return (
                                     <g transform={`translate(${x},${y})`}>
                                         <text
                                             transform="rotate(-90)"
                                             x={0}
-                                            y={-28}
-                                            textAnchor="start"
+                                            y={isMobile ? -10 : -28}
+                                            textAnchor="end"
                                             fill="#6b7280"
                                             fontSize={11}
                                             fontWeight={500}
+                                            dy={isMobile ? 5 : 0}
                                         >
-                                            {payload.value}
+                                            {displayName}
                                         </text>
-                                        <text
-                                            x={0}
-                                            y={20}
-                                            textAnchor="middle"
-                                            fill="#9ca3af"
-                                            fontSize={10}
-                                        >
-                                            12 Tests
-                                        </text>
+                                        {!isMobile && (
+                                            <text
+                                                x={0}
+                                                y={20}
+                                                textAnchor="middle"
+                                                fill="#9ca3af"
+                                                fontSize={10}
+                                            >
+                                                12 Tests
+                                            </text>
+                                        )}
                                     </g>
                                 );
                             }}
