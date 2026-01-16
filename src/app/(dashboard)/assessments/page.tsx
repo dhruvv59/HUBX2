@@ -1,99 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, Check } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-
-// --- Mock Data ---
-
-type PerformanceLevel = "Excellent" | "Average" | "Poor";
-
-interface Chapter {
-    id: string;
-    name: string;
-}
-
-interface Subject {
-    id: string;
-    name: string;
-    score: number;
-    performance: PerformanceLevel;
-    chapters: Chapter[];
-}
-
-const subjectsData: Subject[] = [
-    {
-        id: "science",
-        name: "Science",
-        score: 92,
-        performance: "Excellent",
-        chapters: Array.from({ length: 10 }).map((_, i) => ({ id: `sci-${i}`, name: `Science Chapter ${i + 1}` })),
-    },
-    {
-        id: "mathematics",
-        name: "Mathematics",
-        score: 59,
-        performance: "Average",
-        chapters: Array.from({ length: 15 }).map((_, i) => ({ id: `math-${i}`, name: `Math Chapter ${i + 1}` })),
-    },
-    {
-        id: "geography",
-        name: "Geography",
-        score: 84,
-        performance: "Excellent",
-        chapters: Array.from({ length: 8 }).map((_, i) => ({ id: `geo-${i}`, name: `Geography Chapter ${i + 1}` })),
-    },
-    {
-        id: "english",
-        name: "English",
-        score: 89,
-        performance: "Excellent",
-        chapters: Array.from({ length: 12 }).map((_, i) => ({ id: `eng-${i}`, name: `English Chapter ${i + 1}` })),
-    },
-    {
-        id: "hindi",
-        name: "Hindi",
-        score: 81,
-        performance: "Excellent",
-        chapters: Array.from({ length: 10 }).map((_, i) => ({ id: `hin-${i}`, name: `Hindi Chapter ${i + 1}` })),
-    },
-    {
-        id: "social_science",
-        name: "Social Science",
-        score: 37,
-        performance: "Poor",
-        chapters: [
-            { id: "ss-1", name: "The French Revolution" },
-            { id: "ss-2", name: "Socialism in Europe and the Russian Revolution" },
-            { id: "ss-3", name: "Nazism and the Rise of Hitler" },
-            { id: "ss-4", name: "Forest, Society and Colonialism" },
-            { id: "ss-5", name: "Pastoralists in the Modern World" },
-            { id: "ss-6", name: "Natural Vegetation and Wildlife" },
-            { id: "ss-7", name: "Interdisciplinary project as part of multiple assessments" },
-            { id: "ss-8", name: "Population" },
-            { id: "ss-9", name: "What is Democracy?" },
-            { id: "ss-10", name: "Constitutional Desig" },
-            { id: "ss-11", name: "Electoral Politics" },
-            { id: "ss-12", name: "Working of Institutions" },
-            { id: "ss-13", name: "Democratic Rights" },
-        ],
-    },
-    {
-        id: "it",
-        name: "Information Technology",
-        score: 94,
-        performance: "Excellent",
-        chapters: Array.from({ length: 5 }).map((_, i) => ({ id: `it-${i}`, name: `IT Chapter ${i + 1}` })),
-    },
-    {
-        id: "economics",
-        name: "Economics",
-        score: 44,
-        performance: "Poor",
-        chapters: Array.from({ length: 8 }).map((_, i) => ({ id: `eco-${i}`, name: `Economics Chapter ${i + 1}` })),
-    },
-];
+import { getAssessmentSubjects } from "@/services/assessment";
+import { Subject, PerformanceLevel } from "@/types/assessment";
 
 const performanceColors: Record<PerformanceLevel, string> = {
     Excellent: "text-green-500",
@@ -237,8 +149,30 @@ function ChapterAccordion({
 export default function SmartAssessmentPage() {
     const [difficulty, setDifficulty] = useState("Advanced");
     const [timeLimit, setTimeLimit] = useState("30");
-    const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>(["mathematics", "geography", "social_science", "english", "hindi", "it", "economics"]);
-    const [selectedChapters, setSelectedChapters] = useState<string[]>(["ss-1", "ss-2"]); // Mock initial selection
+    const [subjectsData, setSubjectsData] = useState<Subject[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
+    const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+
+    React.useEffect(() => {
+        async function loadSubjects() {
+            try {
+                const data = await getAssessmentSubjects();
+                setSubjectsData(data);
+                // Select all by default or strictly specific ones if desired
+                setSelectedSubjectIds(data.map(s => s.id));
+                // Mock initial chapter selection logic if needed
+                if (data.find(s => s.id === "social_science")) {
+                    setSelectedChapters(["ss-1", "ss-2"]);
+                }
+            } catch (err) {
+                console.error("Failed to load subjects", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadSubjects();
+    }, []);
 
     const toggleSubject = (id: string) => {
         setSelectedSubjectIds((prev) =>
@@ -256,6 +190,17 @@ export default function SmartAssessmentPage() {
 
     const selectedSubjects = subjectsData.filter((s) => selectedSubjectIds.includes(s.id));
     const totalQuestions = selectedSubjects.length * 10; // Mock calculation
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#fafbfc] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                    <p className="text-gray-500 font-medium">Loading Assessment Configuration...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#fafbfc] p-6 lg:p-8 space-y-8 font-sans">
@@ -431,19 +376,23 @@ export default function SmartAssessmentPage() {
                                 </div>
                             </div>
 
-                            <button className="w-full py-3.5 bg-[#5b5bd6] hover:bg-[#4f4fbe] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all transform active:scale-95">
-                                START ASSESSMENT
-                            </button>
+                            <Link href="/assessments/21/take" className="block w-full">
+                                <button className="w-full py-3.5 bg-[#5b5bd6] hover:bg-[#4f4fbe] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all transform active:scale-95">
+                                    START ASSESSMENT
+                                </button>
+                            </Link>
                         </div>
                     </div>
 
                     {/* Secondary Actions */}
-                    <button className="w-full bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
-                        <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW PREVIOUS RESULTS</span>
-                        <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#6366f1]/10">
-                            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#6366f1]" />
-                        </div>
-                    </button>
+                    <Link href="/assessments/results" className="block w-full">
+                        <button className="w-full bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
+                            <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW PREVIOUS RESULTS</span>
+                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#6366f1]/10">
+                                <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#6366f1]" />
+                            </div>
+                        </button>
+                    </Link>
 
                     <button className="w-full bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
                         <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW MARKED QUESTIONS</span>

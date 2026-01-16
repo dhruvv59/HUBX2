@@ -14,24 +14,13 @@ import {
     RotateCw
 } from "lucide-react";
 
-// Custom icon component for Smart AI Assessment
-// We ignore the passed className to prevent text color/fill styles from affecting the container
-// and hardcode the dimensions to match the sidebar standard (h-7 w-7 = 28px).
-const SmartAIIcon = () => (
-    <div className="relative h-7 w-7 flex items-center justify-center">
-        <img
-            src="/assets/images/smart-ai-icon.png"
-            alt="Smart AI"
-            className="h-full w-full object-contain"
-        />
-    </div>
-);
+
 
 // Matches the visual icons from the image
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Compass }, // Blue compass-like
-    { name: "Smart AI Assessment", href: "/assessments", icon: SmartAIIcon, badge: 3 }, // Custom Icon
-    { name: "Public Papers", href: "/papers", icon: Copy, badge: 2 }, // Documents
+    { name: "Smart AI Assessment", href: "/assessments", icon: ClipboardCheck, badge: 3 }, // Custom Icon
+    { name: "Public Paper", href: "/papers", icon: Copy, badge: 2 }, // Documents
     { name: "AI Features", href: "/ai-features", icon: Sparkles }, // Wand
     { name: "Excursion", href: "/excursion", icon: RotateCw }, // Compass-like
 ];
@@ -82,7 +71,7 @@ export function Sidebar() {
                                         "h-7 w-7 transition-colors",
                                         isActive ? "text-[#6366f1] fill-current/10" : "text-[#9ca3af] group-hover:text-[#6366f1]"
                                     )}
-                                    {...(typeof item.icon !== 'function' || item.name !== "Smart AI Assessment" ? { strokeWidth: isActive ? 2.5 : 2 } : {})}
+                                    {...({ strokeWidth: isActive ? 2.5 : 2 })}
                                 />
 
                                 {/* Notification Badge */}

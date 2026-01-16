@@ -67,7 +67,7 @@ const MOCK_DATA: DashboardData = {
         },
         {
             id: 2,
-            author: "Mathematics", // Strange author name, but matching mock
+            author: "Romana Khan", // Changed from "Mathematics" to a real name
             text: "lesson is assigned to you by Kiran Kumari",
             avatar: "/assets/images/teacher2.png"
         },
