@@ -61,7 +61,7 @@ function BulkPageContent() {
                 {
                     id: `q-bulk-${Date.now()}-2`,
                     type: "MCQ",
-                    difficulty: "Average", // Note: type mismatch potential if strictly typed? Difficulty is "Intermediate" in type but user image says "medium". I will map to "Intermediate".
+                    difficulty: "Intermediate", // Note: type mismatch potential if strictly typed? Difficulty is "Intermediate" in type but user image says "medium". I will map to "Intermediate".
                     content: "What is the unit of Force?",
                     solution: "Newton",
                     marks: 1
