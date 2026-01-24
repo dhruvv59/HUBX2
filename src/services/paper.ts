@@ -16,6 +16,7 @@ const MOCK_PAPERS: PublicPaper[] = [
         date: "29 Oct 2025",
         subject: "Mathematics",
         teacher: {
+            id: "t1",
             name: "Mrunal Sir",
             avatarUrl: "/assets/images/avatar-male-1.png"
         }
@@ -34,6 +35,7 @@ const MOCK_PAPERS: PublicPaper[] = [
         date: "29 Oct 2025",
         subject: "Mathematics",
         teacher: {
+            id: "t2",
             name: "Prateik Sir",
             avatarUrl: "/assets/images/avatar-male-2.png"
         }
@@ -52,6 +54,7 @@ const MOCK_PAPERS: PublicPaper[] = [
         date: "29 Oct 2025",
         subject: "Mathematics",
         teacher: {
+            id: "t3",
             name: "Sudarshan Sir",
             avatarUrl: "/assets/images/avatar-male-3.png" // using placeholders, assuming assets exist or will default
         }
@@ -70,6 +73,7 @@ const MOCK_PAPERS: PublicPaper[] = [
         date: "29 Oct 2025",
         subject: "Mathematics",
         teacher: {
+            id: "t4",
             name: "Rajveer Sir",
             avatarUrl: "/assets/images/avatar-male-4.png"
         }
