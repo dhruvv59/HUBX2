@@ -6,32 +6,40 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-    Compass,
+    Gauge,
     ClipboardCheck,
-    Copy,
-    Sparkles,
-    MapPin,
-    RotateCw
+    Files,
+    Wand2,
+    Compass,
+    X
 } from "lucide-react";
-
-
 
 // Matches the visual icons from the image
 const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: Compass }, // Blue compass-like
-    { name: "Smart AI Assessment", href: "/assessments", icon: ClipboardCheck, badge: 3 }, // Custom Icon
-    { name: "Public Paper", href: "/papers", icon: Copy, badge: 2 }, // Documents
-    { name: "AI Features", href: "/ai-features", icon: Sparkles }, // Wand
-    { name: "Excursion", href: "/excursion", icon: RotateCw }, // Compass-like
+    { name: "Dashboard", href: "/dashboard", icon: Gauge }, // Speedometer/Gauge
+    { name: "AI Features", href: "/ai-features", icon: ClipboardCheck, badge: 3 }, // Clipboard with check (Visual Slot 2)
+    { name: "Public Paper", href: "/papers", icon: Files, badge: 2 }, // Stacked files
+    { name: "Smart AI Assessment", href: "/assessments", icon: Wand2 }, // Magic Wand (Visual Slot 4 - User Confirmed Assessment)
+    { name: "Excursion", href: "/excursion", icon: Compass }, // Compass
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+    className?: string;
+    onClose?: () => void;
+    isMobile?: boolean;
+}
+
+export function Sidebar({ className, onClose, isMobile }: SidebarProps) {
     const pathname = usePathname();
 
     return (
-        <div className="hidden md:flex h-full w-[100px] flex-col bg-white border-r border-[#f3f4f6] items-center py-8 z-50 fixed left-0 top-0 bottom-0">
+        <div className={cn(
+            "h-full bg-white border-r border-[#f3f4f6] flex flex-col z-50 transition-all duration-300",
+            isMobile ? "w-[280px] items-start p-6" : "hidden md:flex w-[100px] items-center py-8 fixed left-0 top-0 bottom-0",
+            className
+        )}>
             {/* Logo */}
-            <div className="mb-10">
+            <div className={cn("mb-10 w-full flex justify-between items-center", isMobile ? "px-2" : "justify-center")}>
                 <Image
                     src="/assets/images/logo-icon.png"
                     alt="Lernen Hub"
@@ -40,44 +48,64 @@ export function Sidebar() {
                     className="h-10 w-10 object-contain"
                     priority
                 />
+                {isMobile && (
+                    <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
+                        <X className="w-6 h-6 text-gray-500" />
+                    </button>
+                )}
             </div>
 
             {/* Navigation */}
-            <div className="flex-1 w-full space-y-8 flex flex-col items-center">
+            <div className={cn("flex-1 w-full space-y-4 md:space-y-8 flex flex-col", isMobile ? "items-start" : "items-center")}>
                 {navigation.map((item) => {
                     const isActive = pathname.startsWith(item.href);
-
-                    // Special styling for the active Dashboard icon to look like the blue circle compass in the image
-                    const isDashboard = item.name === "Dashboard";
 
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
+                            onClick={onClose}
                             className={cn(
-                                "relative group flex items-center justify-center h-10 w-full transition-all cursor-pointer",
+                                "relative group flex items-center transition-all cursor-pointer",
+                                isMobile
+                                    ? "w-full gap-3 p-3 rounded-xl hover:bg-gray-50"
+                                    : "justify-center h-10 w-full"
                             )}
                         >
-                            {/* Active Indicator (Right Border/Pill) */}
-                            {isActive && (
+                            {/* Active Indicator (Right Border/Pill) - Desktop */}
+                            {!isMobile && isActive && (
                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[4px] bg-[#6366f1] rounded-l-md" />
                             )}
 
                             {/* Icon Container */}
-                            <div className="relative">
-                                {/* If active dashboard, maybe fill it? The image has a filled blue look. Let's just use color text for now. */}
+                            <div className="relative flex items-center gap-3">
                                 <item.icon
                                     className={cn(
-                                        "h-7 w-7 transition-colors",
-                                        isActive ? "text-[#6366f1] fill-current/10" : "text-[#9ca3af] group-hover:text-[#6366f1]"
+                                        "transition-colors",
+                                        isActive || (isMobile && isActive) ? "text-[#6366f1] fill-current/10" : "text-[#9ca3af] group-hover:text-[#6366f1]",
+                                        isMobile ? "h-6 w-6" : "h-7 w-7"
                                     )}
                                     {...({ strokeWidth: isActive ? 2.5 : 2 })}
                                 />
+                                {/* Text - Mobile Only */}
+                                {isMobile && (
+                                    <span className={cn(
+                                        "text-sm font-semibold transition-colors",
+                                        isActive ? "text-[#6366f1]" : "text-gray-500 group-hover:text-gray-900"
+                                    )}>
+                                        {item.name}
+                                    </span>
+                                )}
 
                                 {/* Notification Badge */}
                                 {item.badge && (
-                                    <div className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-[#ff5757] rounded-full flex items-center justify-center border-[2px] border-white shadow-sm">
-                                        <span className="text-[9px] font-bold text-white leading-none">{item.badge}</span>
+                                    <div className={cn(
+                                        "absolute bg-[#ff5757] rounded-full flex items-center justify-center border-[2px] border-white shadow-sm",
+                                        isMobile ? "relative top-0 right-0 h-5 w-5 ml-auto translate-x-0" : "-top-1.5 -right-1.5 h-4 w-4"
+                                    )}>
+                                        <span className={cn("font-bold text-white leading-none", isMobile ? "text-[10px]" : "text-[9px]")}>
+                                            {item.badge}
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -85,13 +113,7 @@ export function Sidebar() {
                     );
                 })}
             </div>
-
-            {/* Bottom Actions - The image shows a compass icon at the bottom */}
-            <div className="mt-auto mb-4 flex flex-col items-center">
-                <button className="text-[#9ca3af] hover:text-[#6366f1] transition-colors p-2 rounded-lg">
-                    <MapPin className="h-6 w-6" />
-                </button>
-            </div>
         </div>
     );
 }
+

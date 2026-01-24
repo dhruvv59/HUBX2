@@ -1,12 +1,23 @@
 "use client";
 
 import React from "react";
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Search, User, Menu } from "lucide-react";
 
-export function Header() {
+interface HeaderProps {
+    onMenuClick?: () => void;
+}
+
+export function Header({ onMenuClick }: HeaderProps) {
     return (
-        <header className="flex h-16 items-center justify-between border-b border-border bg-white px-6">
-            <div className="flex items-center w-96">
+        <header className="flex h-16 items-center justify-between border-b border-border bg-white px-4 md:px-6">
+            <div className="flex items-center gap-4 w-full md:w-96">
+                <button
+                    onClick={onMenuClick}
+                    className="md:hidden text-muted-foreground hover:text-foreground p-1"
+                >
+                    <Menu className="h-6 w-6" />
+                </button>
+
                 <div className="relative w-full">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <Search className="h-5 w-5 text-muted-foreground" />
@@ -31,3 +42,4 @@ export function Header() {
         </header>
     );
 }
+

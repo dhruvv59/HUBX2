@@ -2,7 +2,8 @@ import { DashboardData } from "@/types/dashboard";
 
 const MOCK_DATA: DashboardData = {
     user: {
-        name: "Akriti Singh"
+        name: "Akriti Singh",
+        avatar: "/assets/images/user-avatar.png"
     },
     stats: [
         {
@@ -63,11 +64,11 @@ const MOCK_DATA: DashboardData = {
             id: 1,
             author: "Bhagabati Das",
             text: "assigned you physics paper.",
-            avatar: "/assets/images/teacher1.png" // Ensure these exist or use placeholders
+            avatar: "/assets/images/teacher1.png"
         },
         {
             id: 2,
-            author: "Romana Khan", // Changed from "Mathematics" to a real name
+            author: "Romana Khan",
             text: "lesson is assigned to you by Kiran Kumari",
             avatar: "/assets/images/teacher2.png"
         },
@@ -95,7 +96,34 @@ const MOCK_DATA: DashboardData = {
         { id: "2", subject: "Physics", topic: "Thermodynamics", score: "37%", scoreColorClass: "text-red-500" },
         { id: "3", subject: "Social Science", topic: "India and the Contemporary World – I", score: "33%", scoreColorClass: "text-red-500" },
         { id: "4", subject: "Geography", topic: "Natural Vegetation and Wildlife", score: "37%", scoreColorClass: "text-red-500" },
-    ]
+    ],
+    latestExcursion: {
+        id: "glenmark-001",
+        title: "APPROVED EXCURSION - GLENMARK PVT. LTD.",
+        status: "Approved",
+        link: "/excursion"
+    },
+    subjectPerformance: {
+        currentSubject: "Social Science",
+        overallPercentage: 58,
+        trend: "Stable",
+        metrics: [
+            { subject: "Social Science", score: 58, color: "#fde047" },
+            { subject: "Mathematics", score: 32, color: "#fca5a5" },
+            { subject: "Science", score: 81, color: "#86efac" },
+            { subject: "English", score: 90, color: "#86efac" },
+        ]
+    },
+    peerRank: {
+        currentRank: 23,
+        currentPercentile: 86,
+        highestRankPercentile: 98,
+        history: [
+            { x: 0, y: 5 }, { x: 10, y: 8 }, { x: 20, y: 12 }, { x: 30, y: 18 },
+            { x: 40, y: 26 }, { x: 50, y: 38 }, { x: 60, y: 52 }, { x: 70, y: 68 },
+            { x: 80, y: 86 }, { x: 90, y: 95 }, { x: 100, y: 98 }
+        ]
+    }
 };
 
 /**

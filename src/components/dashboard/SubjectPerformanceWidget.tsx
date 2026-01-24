@@ -4,41 +4,56 @@ import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { ChevronDown } from "lucide-react";
 import { TabButton, DateSelector } from "./Controls";
+import { SubjectPerformanceData } from "@/types/dashboard";
 
-export function SubjectPerformanceWidget() {
+interface SubjectPerformanceWidgetProps {
+    data: SubjectPerformanceData;
+}
+
+export function SubjectPerformanceWidget({ data }: SubjectPerformanceWidgetProps) {
     const [activeTab, setActiveTab] = React.useState("Last Month");
-    const [percentage, setPercentage] = React.useState(58);
+    const [selectedSubject, setSelectedSubject] = React.useState(data.currentSubject);
     const [dateRange, setDateRange] = React.useState({ from: "01.09.2025", to: "01.10.2025" });
 
+    // In a real app, changing tabs/dates would trigger a new data fetch
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
-        let newPerc = 58;
-        let newFrom = "01.09.2025";
-        let newTo = "01.10.2025";
-
-        if (tab === "Last 3 Months") {
-            newPerc = 64;
-            newFrom = "01.07.2025";
-        } else if (tab === "Last 6 Months") {
-            newPerc = 71;
-            newFrom = "01.04.2025";
-        }
-        setPercentage(newPerc);
-        setDateRange({ from: newFrom, to: newTo });
+        // Logic to simulate change or trigger fetch would go here
     };
 
-    const subjectData = [
-        { name: "Completed", value: percentage, color: "#fde047" }, // Yellow
-        { name: "Remaining", value: 100 - percentage, color: "#e5e7eb" }, // Grey
+    // Find metrics for selected subject or default to first
+    const currentMetric = data.metrics.find(m => m.subject === selectedSubject) || data.metrics[0];
+    const percentage = currentMetric ? currentMetric.score : 0;
+    const color = currentMetric ? currentMetric.color : "#e5e7eb";
+
+    const chartData = [
+        { name: "Completed", value: percentage, color: color },
+        { name: "Remaining", value: 100 - percentage, color: "#f3f4f6" },
     ];
 
     return (
         <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm flex flex-col h-[520px] w-full">
             <div className="flex justify-between items-start mb-4">
                 <h3 className="text-[16px] font-bold text-gray-800">Performance by Subject</h3>
-                <button className="text-[12px] font-bold text-blue-600 flex items-center bg-blue-50 px-3 py-1 rounded-full">
-                    Social Science <ChevronDown className="h-3 w-3 ml-1" />
-                </button>
+
+                {/* Dropdown for Subjects */}
+                <div className="relative group">
+                    <button className="text-[12px] font-bold text-blue-600 flex items-center bg-blue-50 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-100 transition-colors">
+                        {selectedSubject} <ChevronDown className="h-3 w-3 ml-1" />
+                    </button>
+                    {/* Simple Dropdown Content */}
+                    <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 hidden group-hover:block z-10 p-1">
+                        {data.metrics.map(metric => (
+                            <div
+                                key={metric.subject}
+                                onClick={() => setSelectedSubject(metric.subject)}
+                                className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 rounded-lg cursor-pointer font-medium"
+                            >
+                                {metric.subject}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="mb-4">
@@ -62,7 +77,7 @@ export function SubjectPerformanceWidget() {
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
-                            data={subjectData}
+                            data={chartData}
                             innerRadius={100}
                             outerRadius={135}
                             paddingAngle={0}
@@ -71,14 +86,14 @@ export function SubjectPerformanceWidget() {
                             endAngle={-270}
                             stroke="none"
                         >
-                            {subjectData.map((entry, index) => (
+                            {chartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                         </Pie>
                     </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[56px] font-black text-[#1f2937] italic">{percentage}%</span>
+                    <span className="text-[56px] font-black italic" style={{ color: "#1f2937" }}>{percentage}%</span>
                 </div>
             </div>
         </div>

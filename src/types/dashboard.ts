@@ -1,7 +1,8 @@
+// Existing interfaces
 export interface TrendData {
     value: string;
     isUp: boolean;
-    color?: string; // Tailwind class
+    color?: string;
 }
 
 export interface StatCardData {
@@ -10,7 +11,7 @@ export interface StatCardData {
     value: string | number;
     subtext?: string;
     trend?: TrendData;
-    gradient: string; // Tailwind class or raw CSS
+    gradient: string;
     isCustomGradient?: boolean;
 }
 
@@ -39,23 +40,57 @@ export interface FocusArea {
     id: string;
     subject: string;
     topic: string;
-    score: string; // "43%"
+    score: string;
     scoreColorClass: string;
 }
 
+// New Interfaces for Dynamic Widgets
+
+export interface ExcursionData {
+    id: string;
+    title: string;
+    status: string;
+    link: string;
+}
+
+export interface SubjectPerformanceMetric {
+    subject: string;
+    score: number; // 0-100
+    color: string;
+}
+
+export interface SubjectPerformanceData {
+    currentSubject: string;
+    metrics: SubjectPerformanceMetric[]; // For the dropdown
+    overallPercentage: number;
+    trend: string;
+}
+
+export interface PeerRankPoint {
+    x: number; // Percentile (0-100)
+    y: number; // Curve value
+}
+
 export interface PeerRankData {
-    x: number;
-    y: number;
+    currentRank: number;
+    currentPercentile: number;
+    history: PeerRankPoint[]; // The curve data
+    highestRankPercentile: number;
 }
 
 export interface DashboardData {
     user: {
         name: string;
+        avatar?: string;
     };
     stats: StatCardData[];
     papers: PaperStatData[];
-    performanceData: ChartDataPoint[];
+    performanceData: ChartDataPoint[]; // For the main Performance Chart
     notifications: Notification[];
     focusAreas: FocusArea[];
-    // Additional data for widgets can be added here
+
+    // New Dynamic Data Fields
+    latestExcursion: ExcursionData | null;
+    subjectPerformance: SubjectPerformanceData;
+    peerRank: PeerRankData;
 }

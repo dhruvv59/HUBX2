@@ -1,0 +1,126 @@
+"use client";
+
+import React from "react";
+import { cn } from "@/lib/utils";
+
+interface QuestionBankFiltersProps {
+    filters: any;
+    onFilterChange: (key: string, value: any) => void;
+}
+
+export function QuestionBankFilters({ filters, onFilterChange }: QuestionBankFiltersProps) {
+    return (
+        <div className="w-[280px] shrink-0 bg-white rounded-2xl border border-[#f3e8ff] p-6 h-fit shadow-sm">
+            {/* Subjects */}
+            <div className="mb-8 pl-1">
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Subjects</h3>
+                <div className="space-y-3">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className={cn(
+                            "w-5 h-5 rounded-full border flex items-center justify-center transition-colors",
+                            filters.subject === "Science" ? "border-[#5b5bd6]" : "border-gray-300 group-hover:border-[#5b5bd6]"
+                        )}>
+                            {filters.subject === "Science" && <div className="w-2.5 h-2.5 rounded-full bg-[#5b5bd6]" />}
+                        </div>
+                        <span className={cn("text-xs font-bold", filters.subject === "Science" ? "text-[#5b5bd6]" : "text-gray-600")}>Science</span>
+                    </label>
+                </div>
+            </div>
+
+            {/* Difficulty Level */}
+            <div className="mb-8">
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Difficulty Level</h3>
+                <div className="space-y-3">
+                    {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
+                        <label key={level} className="flex items-center gap-3 cursor-pointer group">
+                            <div className={cn(
+                                "w-5 h-5 rounded-full border flex items-center justify-center transition-colors",
+                                filters.difficulty === level ? "border-[#5b5bd6]" : "border-gray-300 group-hover:border-[#5b5bd6]"
+                            )}>
+                                {filters.difficulty === level && <div className="w-2.5 h-2.5 rounded-full bg-[#5b5bd6]" />}
+                            </div>
+                            <span className={cn("text-xs font-bold", filters.difficulty === level ? "text-[#5b5bd6]" : "text-gray-600")}>
+                                {level}
+                            </span>
+                            <input
+                                type="radio"
+                                name="difficulty"
+                                className="hidden"
+                                checked={filters.difficulty === level}
+                                onChange={() => onFilterChange("difficulty", level)}
+                            />
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            {/* Rating */}
+            <div className="mb-8">
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Rating</h3>
+                <div className="space-y-3">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className={cn(
+                            "w-5 h-5 rounded-full border flex items-center justify-center transition-colors",
+                            filters.rating === "4star" ? "border-[#5b5bd6]" : "border-gray-300 group-hover:border-[#5b5bd6]"
+                        )}>
+                            {filters.rating === "4star" && <div className="w-2.5 h-2.5 rounded-full bg-[#5b5bd6]" />}
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs font-bold text-gray-600 hover:text-[#5b5bd6] transition-colors">4 <span className="text-orange-400">★</span> & above</span>
+                        </div>
+                        <input
+                            type="radio"
+                            name="rating"
+                            className="hidden"
+                            checked={filters.rating === "4star"}
+                            onChange={() => onFilterChange("rating", "4star")}
+                        />
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className={cn(
+                            "w-5 h-5 rounded-full border flex items-center justify-center transition-colors",
+                            filters.rating === "popular" ? "border-[#5b5bd6]" : "border-gray-300 group-hover:border-[#5b5bd6]"
+                        )}>
+                            {filters.rating === "popular" && <div className="w-2.5 h-2.5 rounded-full bg-[#5b5bd6]" />}
+                        </div>
+                        <span className={cn("text-xs font-bold", filters.rating === "popular" ? "text-[#5b5bd6]" : "text-gray-600")}>Most Popular</span>
+                        <input
+                            type="radio"
+                            name="rating"
+                            className="hidden"
+                            checked={filters.rating === "popular"}
+                            onChange={() => onFilterChange("rating", "popular")}
+                        />
+                    </label>
+                </div>
+            </div>
+
+            {/* Added Time */}
+            <div>
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Added Time</h3>
+                <div className="space-y-3">
+                    {["Latest", "Oldest"].map((time) => (
+                        <label key={time} className="flex items-center gap-3 cursor-pointer group">
+                            <div className={cn(
+                                "w-5 h-5 rounded-full border flex items-center justify-center transition-colors",
+                                filters.addedTime === time ? "border-[#5b5bd6]" : "border-gray-300 group-hover:border-[#5b5bd6]"
+                            )}>
+                                {filters.addedTime === time && <div className="w-2.5 h-2.5 rounded-full bg-[#5b5bd6]" />}
+                            </div>
+                            <span className={cn("text-xs font-bold", filters.addedTime === time ? "text-[#5b5bd6]" : "text-gray-600")}>
+                                {time}
+                            </span>
+                            <input
+                                type="radio"
+                                name="addedTime"
+                                className="hidden"
+                                checked={filters.addedTime === time}
+                                onChange={() => onFilterChange("addedTime", time)}
+                            />
+                        </label>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}

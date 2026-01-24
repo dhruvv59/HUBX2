@@ -93,7 +93,7 @@ export default function StudentDashboard() {
                     </div>
 
                     {/* Excursion Banner */}
-                    <ExcursionBanner />
+                    <ExcursionBanner data={data.latestExcursion} />
 
                     {/* Performance Analysis Chart */}
                     <PerformanceChart initialData={data.performanceData} />
@@ -101,10 +101,10 @@ export default function StudentDashboard() {
                     {/* Bottom Charts Row */}
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         {/* Donut Chart Widget */}
-                        <SubjectPerformanceWidget />
+                        <SubjectPerformanceWidget data={data.subjectPerformance} />
 
                         {/* Rank Line Chart Widget */}
-                        <PeerRankWidget />
+                        <PeerRankWidget data={data.peerRank} />
                     </div>
 
                 </div>
