@@ -12,7 +12,7 @@ export default function DashboardLayout({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className="flex h-screen bg-border/20">
+        <div className="flex h-[100dvh] bg-border/20">
             {/* Desktop Sidebar (Hidden on mobile) */}
             <Sidebar />
 

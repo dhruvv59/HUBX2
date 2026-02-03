@@ -85,6 +85,32 @@ export interface PublicPaper {
     purchased?: boolean;
 }
 
+// ==========================================
+// API RESPONSE TYPES (Backend Contract)
+// ==========================================
+
+export interface ApiPublicPaper {
+    paper_uuid: string;
+    paper_title: string;
+    is_featured: boolean;
+    cost_amount: number; // e.g. 200
+    difficulty_grade: string; // "ADVANCED"
+    topic_tags: string[];
+    user_rating: number; // 4.5
+    stats: {
+        total_questions: number;
+        duration_minutes: number;
+        total_attempts: number;
+    };
+    created_at_date: string; // ISO
+    subject_name: string;
+    author: {
+        teacher_id: string;
+        display_name: string;
+        profile_pic_url: string;
+    };
+}
+
 export interface PaperFilters {
     subject?: string;
     level?: string;
@@ -111,4 +137,63 @@ export interface TestSettings {
     noTimeLimit: boolean;
     showAnswersAfterWrong: boolean;
     inTestSolutionView: boolean;
+}
+
+// ==========================================
+// API RESPONSE TYPES (Backend Contract)
+// ==========================================
+
+export interface ApiChapter {
+    sys_id: string;
+    title: string;
+}
+
+export interface ApiSubject {
+    subject_id: string;
+    display_name: string;
+    current_score: number; // 0-100
+    chapters: ApiChapter[];
+}
+
+export interface ApiAssessmentResult {
+    exam_id: string;
+    exam_title: string;
+    difficulty_level: string; // Backend might send "ADVANCED" (uppercase)
+    tags_list: string[];
+    submission_date: string; // ISO String
+    score_details: {
+        obtained: number;
+        max: number;
+    };
+    timings: {
+        time_taken_seconds: number;
+        total_duration_seconds: number;
+    };
+    stats: {
+        correct: number;
+        wrong: number;
+        total_qs: number;
+        flags: number;
+        doubts: number;
+        marked: number;
+    };
+}
+
+export interface ApiQuestion {
+    q_id: number;
+    problem_statement: string;
+    q_type: "MCQ";
+    max_points: number;
+    answer_choices: { choice_id: string, label: string }[]; // e.g. [{ choice_id: "A", label: "3x10..." }]
+    correct_choice_id: string; // "A"
+}
+
+export interface ApiAssessmentDetail {
+    exam_uuid: string;
+    exam_name: string;
+    subject_names: string[];
+    difficulty: string; // "ADVANCED"
+    max_marks: number;
+    allowed_time_seconds: number;
+    question_paper: ApiQuestion[];
 }

@@ -99,7 +99,7 @@ export function PrivatePapersFilters({ className, filters, onFilterChange }: Pri
 
             {/* AI Smart Generator Card */}
             <div
-                onClick={() => router.push("/teacher/ai/create")}
+                onClick={() => router.push("/teacher/ai-assessments/create")}
                 className="bg-white rounded-2xl border border-[#f3e8ff] p-5 cursor-pointer hover:shadow-md transition-all group relative overflow-hidden"
             >
                 <div className="absolute top-0 left-0 w-1 h-full bg-[#dbeafe]" />

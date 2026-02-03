@@ -18,10 +18,10 @@ import {
 
 const navigation = [
     { name: "Dashboard", href: "/teacher/dashboard", icon: Gauge },
-    { name: "Private Papers", href: "/teacher/assessments", icon: ClipboardCheck },
-    { name: "Papers", href: "/teacher/papers", icon: Files },
+    { name: "Private Papers", href: "/teacher/paper-assessments", icon: ClipboardCheck },
+    { name: "Papers", href: "/teacher/public-papers", icon: Files },
     { name: "Question Bank", href: "/teacher/question-bank", icon: FileQuestion },
-    { name: "AI Features", href: "/teacher/ai", icon: Sparkles },
+    { name: "AI Features", href: "/teacher/ai-assessments", icon: Sparkles },
     { name: "Excursion", href: "/teacher/excursion", icon: Compass },
 ];
 

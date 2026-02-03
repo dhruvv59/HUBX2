@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { Notification } from "@/types/dashboard";
 
 interface NotificationWidgetProps {
@@ -33,9 +34,12 @@ export function NotificationWidget({ notifications }: NotificationWidgetProps) {
                     </div>
                 ))}
             </div>
-            <button className="w-full mt-4 py-2 text-[11px] font-bold text-[#1f2937] border border-gray-300 bg-white rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+            <Link
+                href="/dashboard/notifications"
+                className="w-full mt-4 py-2 text-[11px] font-bold text-[#1f2937] border border-gray-300 bg-white rounded-lg hover:bg-gray-50 transition-colors shadow-sm text-center block"
+            >
                 View All
-            </button>
+            </Link>
         </div>
     );
 }

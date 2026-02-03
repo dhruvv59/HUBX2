@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PublicPaper } from "@/types/assessment";
-import { getPublicPapers } from "@/services/paper"; // Mock service
+import { getPurchasedPapers } from "@/services/paper"; // Updated import
 import { PaperCard } from "@/components/assessment/PaperCard";
 import { TestSettingsModal } from "@/components/assessment/TestSettingsModal";
 
@@ -22,16 +22,8 @@ export default function PurchasedPapersPage() {
         const loadPurchased = async () => {
             setIsLoading(true);
             try {
-                // Mock fetching only purchased papers. 
-                // In real app, API endpoint /papers/purchased
-                // For now, get all and filter locally or simulate
-                const allPapers = await getPublicPapers({});
-                // Simulate some purchased papers if none marked (for demo)
-                // In previous steps we marked some locally, but here we are on a fresh page load.
-                // Let's mock a fixed set or mark randoms if service doesn't persist.
-                // The service mock data isn't persistent across page reloads usually unless in memory and single page app session.
-                // I will manually mark them strictly for this view to match screenshot.
-                const purchased = allPapers.map(p => ({ ...p, purchased: true })).slice(0, 5);
+                // Fetch purchased papers using the service
+                const purchased = await getPurchasedPapers();
                 setPapers(purchased);
             } catch (e) {
                 console.error(e);

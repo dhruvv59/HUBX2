@@ -14,7 +14,10 @@ interface PerformanceChartProps {
 export function PerformanceChart({ initialData }: PerformanceChartProps) {
     const [activeTab, setActiveTab] = React.useState("Last Month");
     const [data, setData] = React.useState(initialData);
-    const [dateRange, setDateRange] = React.useState({ from: "01.09.2025", to: "01.10.2025" });
+    const [dateRange, setDateRange] = React.useState({
+        from: "01.09.2025",
+        to: "01.10.2025"
+    });
     const [isMobile, setIsMobile] = React.useState(false);
 
     React.useEffect(() => {
@@ -49,24 +52,42 @@ export function PerformanceChart({ initialData }: PerformanceChartProps) {
         setDateRange({ from: newFrom, to: newTo });
     };
 
+    const handleFromDateChange = (newDate: string) => {
+        setDateRange(prev => ({ ...prev, from: newDate }));
+        setActiveTab(""); // Clear active tab when manually selecting date
+        // In a real app, fetch new data based on date range here
+    };
+
+    const handleToDateChange = (newDate: string) => {
+        setDateRange(prev => ({ ...prev, to: newDate }));
+        setActiveTab(""); // Clear active tab when manually selecting date
+        // In a real app, fetch new data based on date range here
+    };
+
     return (
-        <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm w-full">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <h3 className="text-[16px] font-bold text-gray-800">Performance Analysis</h3>
-                <div className="flex flex-wrap gap-2 items-center">
-                    {["Last Month", "Last 3 Months", "Last 6 Months"].map((tab) => (
-                        <div key={tab}>
+        <div className="bg-white rounded-[24px] p-6 shadow-sm w-full">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-6 gap-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <h3 className="text-[16px] font-bold text-gray-800 whitespace-nowrap">Performance Analysis</h3>
+                    <div className="flex flex-wrap gap-2 items-center">
+                        {["Last Month", "Last 3 Months", "Last 6 Months"].map((tab) => (
                             <TabButton
+                                key={tab}
                                 active={activeTab === tab}
                                 onClick={() => handleTabChange(tab)}
                             >
                                 {tab}
                             </TabButton>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-                <div className="hidden md:block">
-                    <DateSelector fromDate={dateRange.from} toDate={dateRange.to} />
+                <div className="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                    <DateSelector
+                        fromDate={dateRange.from}
+                        toDate={dateRange.to}
+                        onFromChange={handleFromDateChange}
+                        onToChange={handleToDateChange}
+                    />
                 </div>
             </div>
 

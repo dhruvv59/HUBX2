@@ -4,21 +4,21 @@ import React, { useState, useEffect, Suspense } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PaperSummaryCard } from "@/components/teacher/ai/PaperSummaryCard";
-import { BulkUploadForm } from "@/components/teacher/ai/BulkUploadForm";
+import { ManualQuestionForm } from "@/components/teacher/ai/ManualQuestionForm";
 import { AddedQuestionsList } from "@/components/teacher/ai/AddedQuestionsList";
 import { PublishConfirmModal } from "@/components/teacher/ai/PublishConfirmModal";
 import { PublishSuccessModal } from "@/components/teacher/ai/PublishSuccessModal";
 import { getDraft, addQuestionToDraft, removeQuestionFromDraft } from "@/services/draft-service";
 import { PaperConfig, Question } from "@/types/generate-paper";
 
-function BulkPageContent() {
+function ManualPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const draftId = searchParams.get("draftId");
 
     const [config, setConfig] = useState<PaperConfig | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isUploading, setIsUploading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
@@ -26,7 +26,7 @@ function BulkPageContent() {
     useEffect(() => {
         const fetchDraft = async () => {
             if (!draftId) {
-                router.push("/teacher/ai");
+                router.push("/teacher/ai-assessments");
                 return;
             }
             try {
@@ -41,47 +41,31 @@ function BulkPageContent() {
         fetchDraft();
     }, [draftId, router]);
 
-    const handleFileUpload = async (file: File) => {
+    const handleAddQuestion = async (question: Question) => {
         if (!draftId) return;
-        setIsUploading(true);
+        setIsSubmitting(true);
         try {
-            // Simulate processing file and adding mock questions
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Mock questions extracted from "Excel"
-            const newQuestions: Question[] = [
-                {
-                    id: `q-bulk-${Date.now()}-1`,
-                    type: "Text",
-                    difficulty: "Easy",
-                    content: "Define Newton's First Law of Motion.",
-                    solution: "An object at rest stays at rest and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force.",
-                    marks: 2
-                },
-                {
-                    id: `q-bulk-${Date.now()}-2`,
-                    type: "MCQ",
-                    difficulty: "Intermediate", // Note: type mismatch potential if strictly typed? Difficulty is "Intermediate" in type but user image says "medium". I will map to "Intermediate".
-                    content: "What is the unit of Force?",
-                    solution: "Newton",
-                    marks: 1
-                }
-            ];
-
-            // Add each question
-            for (const q of newQuestions) {
-                await addQuestionToDraft(draftId, { ...q, difficulty: "Intermediate" }); // mapping all to Intermediate for safety or "Easy" based on mock
-            }
-
+            await addQuestionToDraft(draftId, question);
+            // In a real app we might redirect to a list or clear form.
+            // For this flow, maybe we stay here or go back to list?
+            // User says "Add Question".
+            // The image shows "Question 1". If we add, do we go to "Question 2"?
+            // Or does "Add Question" finish it?
+            // The image has "Save Question Paper" at top.
+            // I'll assume it appends and clears form for next question, or shows success.
+            // I'll reload config to update summary (if summary involves question count?).
             const updated = await getDraft(draftId);
             if (updated) setConfig(updated);
-            alert("File Processed: 5 Questions Added!");
 
+            // Reset form? The component is controlled internally. 
+            // I'll just show an alert for now or Refresh.
+            // Actually, best UX: Navigate to "Review" or stay?
+            // I'll assume stay and allow adding another.
+            alert("Question added successfully!"); // Placeholder for notification
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("Upload failed. Please check file format.");
+            console.error(error);
         } finally {
-            setIsUploading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -99,7 +83,9 @@ function BulkPageContent() {
     const handleConfirmPublish = async () => {
         setIsPublishing(true);
         try {
+            // Simulate API call to publish
             await new Promise(resolve => setTimeout(resolve, 1500));
+            // Close confirm modal and open success modal
             setIsPublishModalOpen(false);
             setIsSuccessModalOpen(true);
         } catch (error) {
@@ -161,15 +147,19 @@ function BulkPageContent() {
                         </h2>
                     </div>
 
-                    {/* Bulk Upload Form */}
-                    <BulkUploadForm
-                        onUpload={handleFileUpload}
+                    {/* Question Form */}
+                    <ManualQuestionForm
+                        questionNumber={(config.questions?.length || 0) + 1}
+                        onAdd={handleAddQuestion}
                         onCancel={() => router.back()}
-                        isUploading={isUploading}
+                        onOpenBank={() => router.push(`/teacher/question-bank?draftId=${draftId}`)}
+                        isSubmitting={isSubmitting}
                     />
 
-                    {/* Added Questions List (Shows results after upload) */}
+                    {/* Added Questions List */}
                     <div className="mt-8">
+                        {/* Dynamic import or direct component usage */}
+                        {/* We need to import AddedQuestionsList at top */}
                         <AddedQuestionsList
                             questions={config.questions || []}
                             onRemove={handleRemoveQuestion}
@@ -193,10 +183,10 @@ function BulkPageContent() {
     );
 }
 
-export default function BulkUploadPage() {
+export default function ManualQuestionPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 text-[#6366f1] animate-spin" /></div>}>
-            <BulkPageContent />
+            <ManualPageContent />
         </Suspense>
     );
 }

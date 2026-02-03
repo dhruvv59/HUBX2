@@ -1,4 +1,4 @@
-import { PaperConfig } from "@/types/generate-paper";
+import { PaperConfig, Question } from "@/types/generate-paper";
 
 const STORAGE_KEY = "hubx_drafts";
 
@@ -40,7 +40,7 @@ export const getDraft = async (draftId: string): Promise<PaperConfig | null> => 
     return store[draftId] || null;
 };
 
-export const addQuestionToDraft = async (draftId: string, question: any): Promise<void> => {
+export const addQuestionToDraft = async (draftId: string, question: Question): Promise<void> => {
     await new Promise(resolve => setTimeout(resolve, 400));
     const store = getStore();
     const draft = store[draftId];

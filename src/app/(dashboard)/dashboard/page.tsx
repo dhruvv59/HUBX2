@@ -2,27 +2,48 @@
 
 import React, { useEffect, useState } from "react";
 import { getDashboardData } from "@/services/dashboard";
+import { getPurchasedPapersCount } from "@/services/paper";
 import { DashboardData } from "@/types/dashboard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { PaperCard } from "@/components/dashboard/PaperCard";
+import { PurchasedPapersCard } from "@/components/dashboard/PurchasedPapersCard";
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
 import { SubjectPerformanceWidget } from "@/components/dashboard/SubjectPerformanceWidget";
 import { PeerRankWidget } from "@/components/dashboard/PeerRankWidget";
-import { NotificationWidget } from "@/components/dashboard/NotificationWidget";
-import { FocusAreaWidget } from "@/components/dashboard/FocusAreaWidget";
+// import { FocusAreaWidget } from "@/components/dashboard/FocusAreaWidget";
 import { ExcursionBanner } from "@/components/dashboard/ExcursionBanner";
 import { AIAssessmentBanner } from "@/components/dashboard/AIAssessmentBanner";
+import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidget";
+// import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
+
+// import { DailyQuestionWidget } from "@/components/dashboard/DailyQuestionWidget";
+import { UpcomingExamsWidget } from "@/components/dashboard/UpcomingExamsWidget";
+import { CombinedWidget } from "@/components/dashboard/CombinedWidget";
+import { HubXSmartTestsWidget } from "@/components/dashboard/HubXSmartTestsWidget";
+import { SyllabusCoverageWidget } from "@/components/dashboard/SyllabusCoverageWidget";
+
+
+
+
+
+
+
 
 export default function StudentDashboard() {
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [purchasedPapersCount, setPurchasedPapersCount] = useState<number>(0);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const dashboardData = await getDashboardData();
+                const [dashboardData, purchasedCount] = await Promise.all([
+                    getDashboardData(),
+                    getPurchasedPapersCount()
+                ]);
                 setData(dashboardData);
+                setPurchasedPapersCount(purchasedCount);
             } catch (err) {
                 console.error("Failed to fetch dashboard data", err);
                 setError("Failed to load dashboard data. Please try again later.");
@@ -75,11 +96,13 @@ export default function StudentDashboard() {
     }
 
     return (
-        <div className="p-2 md:p-8 max-w-[1600px] mx-auto space-y-6 md:space-y-8 font-sans bg-[#fafafa] min-h-screen">
+        <div className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-6 md:space-y-8 font-sans bg-[#fafafa] min-h-screen">
             {/* Greeting */}
             <div>
                 <h1 className="text-[24px] md:text-[28px] font-bold text-[#111827] tracking-tight">Hello, {data.user.name}</h1>
             </div>
+
+
 
             <div className="grid grid-cols-12 gap-6">
                 {/* LEFT COLUMN (Main Content) */}
@@ -107,27 +130,57 @@ export default function StudentDashboard() {
                         <PeerRankWidget data={data.peerRank} />
                     </div>
 
+                    {/* Syllabus Tracking Row */}
+                    <div className="w-full">
+                        <SyllabusCoverageWidget data={data.syllabus} />
+                    </div>
+
+                    {/* New HubX Smart Tests Section */}
+                    <HubXSmartTestsWidget tests={data.testRecommendations} />
+
                 </div>
+
+
 
                 {/* RIGHT COLUMN (Widgets) */}
                 <div className="col-span-12 lg:col-span-3 space-y-5">
 
+                    {/* Upcoming Exams - New Widget to fill space */}
+                    <div className="h-auto">
+                        <UpcomingExamsWidget exams={data.upcomingExams} />
+                    </div>
+
+                    {/* Daily Question - New Engagement Widget */}
+                    {/* <div className="h-auto">
+                        <DailyQuestionWidget data={data.dailyQuestion} />
+                    </div> */}
+
+
+                    {/* Recent Activity / History */}
+                    <RecentActivityWidget activities={data.recentActivities} />
+
+
                     {/* Papers & AI Assessment Cards */}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
                         {data.papers.map(paper => (
                             <PaperCard key={paper.id} data={paper} />
                         ))}
 
+                        {/* Purchased Papers Card - Only show if student has purchased papers */}
+                        {purchasedPapersCount > 0 && (
+                            <PurchasedPapersCard count={purchasedPapersCount} />
+                        )}
+
                         {/* AI Assessment Banner */}
                         <AIAssessmentBanner />
                     </div>
 
-                    {/* Notifications Widget */}
-                    <NotificationWidget notifications={data.notifications} />
-
-                    {/* AI Focus Area Widget */}
-                    <FocusAreaWidget focusAreas={data.focusAreas} />
+                    {/* Notifications & AI Focus Area Combined Widget */}
+                    <CombinedWidget notifications={data.notifications} focusAreas={data.focusAreas} />
                 </div>
+
+
             </div>
         </div>
     );

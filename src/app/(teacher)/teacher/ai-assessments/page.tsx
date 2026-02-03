@@ -23,6 +23,7 @@ const INITIAL_CONFIG: PaperConfig = {
     ],
     isTimeBound: true,
     isPublic: true,
+    schoolOnly: false,
     duration: 60,
     price: 450
 };
@@ -36,7 +37,7 @@ export default function GeneratePaperPage() {
         setIsSubmitting(true);
         try {
             const draftId = await saveDraft(config);
-            router.push(`/teacher/ai/create?draftId=${draftId}`);
+            router.push(`/teacher/ai-assessments/create?draftId=${draftId}`);
         } catch (error) {
             console.error("Failed to save draft", error);
             setIsSubmitting(false); // Only reset on error, otherwise we navigate away

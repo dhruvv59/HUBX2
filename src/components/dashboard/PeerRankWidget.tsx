@@ -13,40 +13,92 @@ interface PeerRankWidgetProps {
 export function PeerRankWidget({ data }: PeerRankWidgetProps) {
     const [activeTab, setActiveTab] = React.useState("Last Month");
     const [dateRange, setDateRange] = React.useState({ from: "01.09.2025", to: "01.10.2025" });
+    const [historyData, setHistoryData] = React.useState(data.history);
 
     // In a production app, these values would update based on the fetched data for the selected period
     const userRank = { rank: data.currentRank, percentile: data.currentPercentile };
 
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
-        // Logic to fetch new data for the tab
+        let newFrom = "01.09.2025";
+        const newTo = "01.10.2025";
+
+        // Simulate data update
+        // In a real app, this would be an API call returning new history data
+        let newData = [...data.history];
+
+        if (tab === "Last 3 Months") {
+            newFrom = "01.07.2025";
+            newData = newData.map(item => ({
+                ...item,
+                y: Math.min(100, Math.max(0, item.y + (Math.random() > 0.5 ? 5 : -5)))
+            }));
+        } else if (tab === "Last 6 Months") {
+            newFrom = "01.04.2025";
+            newData = newData.map(item => ({
+                ...item,
+                y: Math.min(100, Math.max(0, item.y + (Math.random() > 0.5 ? 10 : -10)))
+            }));
+        } else {
+            // Reset to "Last Month" / initial data
+            newData = data.history;
+        }
+
+        setHistoryData(newData);
+        setDateRange({ from: newFrom, to: newTo });
+    };
+
+    const handleFromDateChange = (newDate: string) => {
+        setDateRange(prev => ({ ...prev, from: newDate }));
+        setActiveTab("");
+    };
+
+    const handleToDateChange = (newDate: string) => {
+        setDateRange(prev => ({ ...prev, to: newDate }));
+        setActiveTab("");
     };
 
     return (
-        <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm flex flex-col h-[520px] relative w-full">
+        <div className="bg-white rounded-[24px] p-4 md:p-6 shadow-sm flex flex-col h-auto md:h-[520px] relative w-full">
             <h3 className="text-[16px] font-bold text-gray-800 mb-4">Performance Rank Among Peers</h3>
 
             <div className="mb-4">
-                <DateSelector fromDate={dateRange.from} toDate={dateRange.to} />
+                <DateSelector
+                    fromDate={dateRange.from}
+                    toDate={dateRange.to}
+                    onFromChange={handleFromDateChange}
+                    onToChange={handleToDateChange}
+                />
             </div>
 
             <div className="flex flex-wrap gap-2 items-center mb-6">
                 {["Last Month", "Last 3 Months", "Last 6 Months"].map((tab) => (
-                    <div key={tab}>
-                        <TabButton
-                            active={activeTab === tab}
-                            onClick={() => handleTabChange(tab)}
-                        >
-                            {tab}
-                        </TabButton>
-                    </div>
+                    <TabButton
+                        key={tab}
+                        active={activeTab === tab}
+                        onClick={() => handleTabChange(tab)}
+                    >
+                        {tab}
+                    </TabButton>
                 ))}
             </div>
 
-            <div className="flex-1 w-full relative">
+            {/* Mobile/Tablet Rank Display - Visible up to lg breakpoint */}
+            <div className="flex lg:hidden flex-col gap-3 mb-6 bg-gray-50 p-4 rounded-xl">
+                <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Your Rank</span>
+                    <span className="text-lg font-bold text-blue-600">#{userRank.rank} <span className="text-sm font-normal text-gray-400">({userRank.percentile}%)</span></span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Highest Rank</span>
+                    <span className="text-lg font-bold text-teal-500">#1 <span className="text-sm font-normal text-gray-400">({data.highestRankPercentile}%)</span></span>
+                </div>
+            </div>
+
+            <div className="h-[250px] lg:flex-1 w-full relative">
                 <div className="absolute inset-0 z-0">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={data.history} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+                        <AreaChart data={historyData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorY" x1="0" y1="0" x2="1" y2="0">
                                     <stop offset="5%" stopColor="#fdba74" stopOpacity={0.8} />
@@ -64,8 +116,8 @@ export function PeerRankWidget({ data }: PeerRankWidgetProps) {
                     </ResponsiveContainer>
                 </div>
 
-                {/* Top Rank Dot/Arrow - Positioned based on Highest Rank Percentile */}
-                <div className="absolute right-[5px] top-[5%] flex items-center z-10 animate-in fade-in zoom-in duration-500 hidden md:flex">
+                {/* Top Rank Dot/Arrow - Positioned based on Highest Rank Percentile - Hidden on smaller screens */}
+                <div className="absolute right-[5px] top-[5%] flex items-center z-10 animate-in fade-in zoom-in duration-500 hidden lg:flex">
                     <div className="flex flex-col items-end mr-2">
                         <span className="text-[12px] font-bold text-[#2dd4bf] italic mb-1">Rank 1 - {data.highestRankPercentile}%</span>
                         <div className="h-[1px] w-[200px] bg-[#2dd4bf] relative">
@@ -75,9 +127,9 @@ export function PeerRankWidget({ data }: PeerRankWidgetProps) {
                     </div>
                 </div>
 
-                {/* User Rank Dot/Arrow - Dynamic Position */}
+                {/* User Rank Dot/Arrow - Dynamic Position - Hidden on smaller screens */}
                 {/* 100 - percentile gives the top percentage for css 'top' attribute roughly */}
-                <div className="absolute right-[20%] z-10 transition-all duration-500 hidden md:flex" style={{ top: `${100 - userRank.percentile + 5}%` }}>
+                <div className="absolute right-[20%] z-10 transition-all duration-500 hidden lg:flex" style={{ top: `${100 - userRank.percentile + 5}%` }}>
                     <div className="flex flex-col items-end mr-2">
                         <span className="text-[12px] font-bold text-[#3b82f6] italic mb-1">Rank {userRank.rank} - {userRank.percentile}%</span>
                         <div className="h-[1px] w-[250px] bg-[#3b82f6] relative shadow-sm">

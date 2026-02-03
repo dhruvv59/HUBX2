@@ -158,10 +158,11 @@ export function GeneratePaperForm({ config, onChange, onAddQuestion, isSubmittin
                 </div>
             </div>
 
-            {/* Row 4: Paper Type Toggles */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-2">Select Paper Type</label>
+            {/* Row 4: Paper Type Toggles - All 3 in one row */}
+            <div className="mb-6">
+                <label className="block text-xs font-medium text-gray-500 mb-2">Select Paper Type</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Time Bound Test */}
                     <div className="flex items-center justify-between h-11 px-4 rounded-lg border border-gray-200 hover:border-indigo-200 transition-colors">
                         <span className="text-sm font-bold text-gray-900">Time Bound Test</span>
                         <div
@@ -171,9 +172,8 @@ export function GeneratePaperForm({ config, onChange, onAddQuestion, isSubmittin
                             <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform", config.isTimeBound ? "translate-x-4" : "translate-x-0")} />
                         </div>
                     </div>
-                </div>
-                <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-2 invisible">Spacer</label>
+
+                    {/* Public Paper */}
                     <div className="flex items-center justify-between h-11 px-4 rounded-lg border border-gray-200 hover:border-indigo-200 transition-colors">
                         <span className="text-sm font-bold text-gray-900">Public Paper</span>
                         <div
@@ -183,7 +183,25 @@ export function GeneratePaperForm({ config, onChange, onAddQuestion, isSubmittin
                             <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform", config.isPublic ? "translate-x-4" : "translate-x-0")} />
                         </div>
                     </div>
+
+                    {/* Free Access for School Students */}
+                    <div className="flex items-center justify-between h-11 px-4 rounded-lg border border-gray-200 hover:border-indigo-200 transition-colors">
+                        <span className="text-sm font-bold text-gray-900">Free Access for School Students</span>
+                        <div
+                            className={cn("w-10 h-6 rounded-full p-1 cursor-pointer transition-colors relative", config.schoolOnly ? "bg-[#5b5bd6]" : "bg-gray-200")}
+                            onClick={() => !isSubmitting && handleChange("schoolOnly", !config.schoolOnly)}
+                        >
+                            <div className={cn("w-4 h-4 bg-white rounded-full shadow-sm transition-transform", config.schoolOnly ? "translate-x-4" : "translate-x-0")} />
+                        </div>
+                    </div>
                 </div>
+
+                {/* Description below all toggles - full width */}
+                {config.schoolOnly && (
+                    <p className="text-xs text-gray-500 px-2 mt-3">
+                        Students from your school will receive a free access code via email. Others can still purchase.
+                    </p>
+                )}
             </div>
 
             {/* Row 5: Duration & Price */}

@@ -21,7 +21,7 @@ function CreatePaperContent() {
             if (!draftId) {
                 // Determine behavior on missing ID (e.g. fresh start or redirect)
                 // For now, redirect back
-                router.push("/teacher/ai");
+                router.push("/teacher/ai-assessments");
                 return;
             }
 
@@ -88,15 +88,15 @@ function CreatePaperContent() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <MethodCard
                             type="manual"
-                            onClick={() => router.push(`/teacher/ai/create/manual?draftId=${draftId}`)}
+                            onClick={() => router.push(`/teacher/ai-assessments/create/manual?draftId=${draftId}`)}
                         />
                         <MethodCard
                             type="bulk"
-                            onClick={() => router.push(`/teacher/ai/create/bulk?draftId=${draftId}`)}
+                            onClick={() => router.push(`/teacher/ai-assessments/create/bulk?draftId=${draftId}`)}
                         />
                         <MethodCard
                             type="ai"
-                            onClick={() => router.push(`/teacher/ai/create/ai?draftId=${draftId}`)}
+                            onClick={() => router.push(`/teacher/ai-assessments/create/ai?draftId=${draftId}`)}
                         />
                     </div>
                 </div>

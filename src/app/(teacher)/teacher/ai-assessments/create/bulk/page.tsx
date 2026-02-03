@@ -4,21 +4,21 @@ import React, { useState, useEffect, Suspense } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PaperSummaryCard } from "@/components/teacher/ai/PaperSummaryCard";
-import { AiGeneratorForm } from "@/components/teacher/ai/AiGeneratorForm";
+import { BulkUploadForm } from "@/components/teacher/ai/BulkUploadForm";
 import { AddedQuestionsList } from "@/components/teacher/ai/AddedQuestionsList";
 import { PublishConfirmModal } from "@/components/teacher/ai/PublishConfirmModal";
 import { PublishSuccessModal } from "@/components/teacher/ai/PublishSuccessModal";
 import { getDraft, addQuestionToDraft, removeQuestionFromDraft } from "@/services/draft-service";
 import { PaperConfig, Question } from "@/types/generate-paper";
 
-function AiGeneratorPageContent() {
+function BulkPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const draftId = searchParams.get("draftId");
 
     const [config, setConfig] = useState<PaperConfig | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
@@ -26,7 +26,7 @@ function AiGeneratorPageContent() {
     useEffect(() => {
         const fetchDraft = async () => {
             if (!draftId) {
-                router.push("/teacher/ai");
+                router.push("/teacher/ai-assessments");
                 return;
             }
             try {
@@ -41,41 +41,47 @@ function AiGeneratorPageContent() {
         fetchDraft();
     }, [draftId, router]);
 
-    const handleGenerate = async (count: number, instructions: string) => {
+    const handleFileUpload = async (file: File) => {
         if (!draftId) return;
-        setIsGenerating(true);
+        setIsUploading(true);
         try {
-            // Simulate AI Generation Delay
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            // Simulate processing file and adding mock questions
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Mock Generated Questions
-            const subjectContent = config?.subject === "Mathematics"
-                ? ["Calculate the area of a circle radius 5cm", "Solve quadratic equation x^2 - 4x + 4 = 0"]
-                : ["Explain Photosynthesis", "Define kinetic energy"];
+            // Mock questions extracted from "Excel"
+            const newQuestions: Question[] = [
+                {
+                    id: `q-bulk-${Date.now()}-1`,
+                    type: "Text",
+                    difficulty: "Easy",
+                    content: "Define Newton's First Law of Motion.",
+                    solution: "An object at rest stays at rest and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force.",
+                    marks: 2
+                },
+                {
+                    id: `q-bulk-${Date.now()}-2`,
+                    type: "MCQ",
+                    difficulty: "Intermediate", // Note: type mismatch potential if strictly typed? Difficulty is "Intermediate" in type but user image says "medium". I will map to "Intermediate".
+                    content: "What is the unit of Force?",
+                    solution: "Newton",
+                    marks: 1
+                }
+            ];
 
-            const newQuestions: Question[] = Array.from({ length: count }).map((_, i) => ({
-                id: `q-ai-${Date.now()}-${i}`,
-                type: "Text",
-                difficulty: config?.difficulty || "Intermediate",
-                content: subjectContent[i % subjectContent.length] + ` (Generative Variation ${i + 1})`,
-                solution: "This is an AI generated comprehensive model solution based on the provided constraints.",
-                marks: 5
-            }));
-
-            // Add questions sequentially
+            // Add each question
             for (const q of newQuestions) {
-                await addQuestionToDraft(draftId, q);
+                await addQuestionToDraft(draftId, { ...q, difficulty: "Intermediate" }); // mapping all to Intermediate for safety or "Easy" based on mock
             }
 
             const updated = await getDraft(draftId);
             if (updated) setConfig(updated);
-            alert(`AI successfully generated ${count} questions!`);
+            alert("File Processed: 5 Questions Added!");
 
         } catch (error) {
-            console.error("AI Generation failed", error);
-            alert("Failed to generate questions. Please try again.");
+            console.error("Upload failed", error);
+            alert("Upload failed. Please check file format.");
         } finally {
-            setIsGenerating(false);
+            setIsUploading(false);
         }
     };
 
@@ -155,15 +161,14 @@ function AiGeneratorPageContent() {
                         </h2>
                     </div>
 
-                    {/* AI Generator Form */}
-                    <AiGeneratorForm
-                        config={config}
-                        onGenerate={handleGenerate}
+                    {/* Bulk Upload Form */}
+                    <BulkUploadForm
+                        onUpload={handleFileUpload}
                         onCancel={() => router.back()}
-                        isGenerating={isGenerating}
+                        isUploading={isUploading}
                     />
 
-                    {/* Added Questions List */}
+                    {/* Added Questions List (Shows results after upload) */}
                     <div className="mt-8">
                         <AddedQuestionsList
                             questions={config.questions || []}
@@ -188,10 +193,10 @@ function AiGeneratorPageContent() {
     );
 }
 
-export default function AiGeneratorPage() {
+export default function BulkUploadPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 text-[#6366f1] animate-spin" /></div>}>
-            <AiGeneratorPageContent />
+            <BulkPageContent />
         </Suspense>
     );
 }

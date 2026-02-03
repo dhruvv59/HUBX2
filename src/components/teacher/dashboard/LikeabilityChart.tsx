@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { ChevronDown } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronDown, Calendar, Loader2 } from "lucide-react";
 import {
     LineChart,
     Line,
@@ -13,73 +13,252 @@ import {
 } from "recharts";
 import { ChartDataPoint } from "@/types/teacher";
 
-function DropdownFilter({ label }: { label: string }) {
+type TimePeriod = '1month' | '3months' | '6months' | 'custom';
+
+interface DateRange {
+    from: string;
+    to: string;
+}
+
+interface LikeabilityChartProps {
+    data: ChartDataPoint[];
+}
+
+function DatePickerButton({ label, onClick }: { label: string; onClick: () => void }) {
     return (
-        <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+        <button
+            onClick={onClick}
+            className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+            <Calendar className="w-3 h-3 text-gray-400" />
             {label}
             <ChevronDown className="w-3 h-3 text-gray-400" />
         </button>
     );
 }
 
-export function LikeabilityChart({ data }: { data: ChartDataPoint[] }) {
+export function LikeabilityChart({ data: initialData }: LikeabilityChartProps) {
+    const [timePeriod, setTimePeriod] = useState<TimePeriod>('1month');
+    const [dateRange, setDateRange] = useState<DateRange>({
+        from: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split('T')[0],
+        to: new Date().toISOString().split('T')[0]
+    });
+    const [chartData, setChartData] = useState<ChartDataPoint[]>(initialData);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch data when filters change
+    const fetchLikeabilityData = async (period: TimePeriod, range: DateRange) => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            // TODO: Replace with actual API endpoint
+            // const response = await fetch(`/api/teacher/dashboard/likeability?period=${period}&from=${range.from}&to=${range.to}`);
+            // if (!response.ok) throw new Error('Failed to fetch likeability data');
+            // const result = await response.json();
+            // setChartData(result.data);
+
+            // For now, simulate API call and filter the initial data
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // Filter data based on selected period
+            let filteredData = [...initialData];
+            const monthMap: Record<TimePeriod, number> = {
+                '1month': 1,
+                '3months': 3,
+                '6months': 6,
+                'custom': 12 // Default for custom, would be handled by date range
+            };
+
+            const monthsToShow = monthMap[period];
+            if (period !== 'custom') {
+                filteredData = initialData.slice(-monthsToShow);
+            }
+
+            setChartData(filteredData);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load data');
+            console.error('Error fetching likeability data:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Handle time period button click
+    const handlePeriodChange = (period: TimePeriod) => {
+        setTimePeriod(period);
+
+        // Update date range based on period
+        const today = new Date();
+        let fromDate: Date;
+
+        switch (period) {
+            case '1month':
+                fromDate = new Date(today.setMonth(today.getMonth() - 1));
+                break;
+            case '3months':
+                fromDate = new Date(today.setMonth(today.getMonth() - 3));
+                break;
+            case '6months':
+                fromDate = new Date(today.setMonth(today.getMonth() - 6));
+                break;
+            default:
+                return; // Don't update range for custom
+        }
+
+        const newRange = {
+            from: fromDate.toISOString().split('T')[0],
+            to: new Date().toISOString().split('T')[0]
+        };
+
+        setDateRange(newRange);
+        fetchLikeabilityData(period, newRange);
+    };
+
+    // Handle custom date selection
+    const handleDateChange = (type: 'from' | 'to', value: string) => {
+        const newRange = { ...dateRange, [type]: value };
+        setDateRange(newRange);
+        setTimePeriod('custom');
+        fetchLikeabilityData('custom', newRange);
+    };
+
+    // Format date for display
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.');
+    };
+
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
                 <h3 className="text-base font-bold text-gray-800">Likeability Analysis</h3>
                 <div className="flex flex-wrap gap-2 items-center">
+                    {/* Time Period Buttons */}
                     <div className="flex bg-[#f8f9fa] rounded-lg p-1 border border-gray-100">
-                        <button className="px-3 py-1 bg-[#f3e8ff] text-[#7e22ce] text-[10px] font-bold rounded-md shadow-sm">Last Month</button>
-                        <button className="px-3 py-1 text-gray-500 text-[10px] font-bold hover:bg-gray-200 rounded-md transition-colors">Last 3 Months</button>
-                        <button className="px-3 py-1 text-gray-500 text-[10px] font-bold hover:bg-gray-200 rounded-md transition-colors">Last 6 Months</button>
+                        <button
+                            onClick={() => handlePeriodChange('1month')}
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '1month'
+                                ? 'bg-[#f3e8ff] text-[#7e22ce] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-200'
+                                }`}
+                        >
+                            Last Month
+                        </button>
+                        <button
+                            onClick={() => handlePeriodChange('3months')}
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '3months'
+                                ? 'bg-[#f3e8ff] text-[#7e22ce] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-200'
+                                }`}
+                        >
+                            Last 3 Months
+                        </button>
+                        <button
+                            onClick={() => handlePeriodChange('6months')}
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '6months'
+                                ? 'bg-[#f3e8ff] text-[#7e22ce] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-200'
+                                }`}
+                        >
+                            Last 6 Months
+                        </button>
                     </div>
+
+                    {/* Date Range Pickers */}
                     <div className="flex items-center gap-2 sm:ml-2">
                         <div className="hidden sm:flex items-center gap-2">
                             <span className="text-[10px] font-bold text-gray-400 uppercase">From</span>
-                            <DropdownFilter label="01.09.2025" />
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    value={dateRange.from}
+                                    onChange={(e) => handleDateChange('from', e.target.value)}
+                                    max={dateRange.to}
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                />
+                                <DatePickerButton label={formatDate(dateRange.from)} onClick={() => { }} />
+                            </div>
                             <span className="text-[10px] font-bold text-gray-400 uppercase">To</span>
-                            <DropdownFilter label="01.10.2025" />
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    value={dateRange.to}
+                                    onChange={(e) => handleDateChange('to', e.target.value)}
+                                    min={dateRange.from}
+                                    max={new Date().toISOString().split('T')[0]}
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                />
+                                <DatePickerButton label={formatDate(dateRange.to)} onClick={() => { }} />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="h-[280px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                        <defs>
-                            <filter id="shadow" height="130%">
-                                <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#a855f7" floodOpacity="0.3" />
-                            </filter>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                        <XAxis
-                            dataKey="name"
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fill: '#6b7280', fontSize: 11, fontWeight: 500 }}
-                            dy={10}
-                        />
-                        <YAxis
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fill: '#6b7280', fontSize: 11, fontWeight: 500 }}
-                            tickFormatter={(value) => `${value}%`}
-                        />
-                        <Tooltip
-                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 20px -5px rgb(0 0 0 / 0.1)' }}
-                            itemStyle={{ color: '#a855f7', fontWeight: 'bold' }}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#a855f7"
-                            strokeWidth={4}
-                            dot={false}
-                            activeDot={{ r: 8, fill: "#fff", stroke: "#a855f7", strokeWidth: 3 }}
-                            filter="url(#shadow)"
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
+
+            {/* Chart Area */}
+            <div className="h-[280px] w-full relative">
+                {isLoading && (
+                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-lg">
+                        <Loader2 className="w-8 h-8 text-[#7e22ce] animate-spin" />
+                    </div>
+                )}
+
+                {error ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center">
+                        <p className="text-red-500 font-medium mb-2">Failed to load likeability data</p>
+                        <p className="text-sm text-gray-500 mb-4">{error}</p>
+                        <button
+                            onClick={() => fetchLikeabilityData(timePeriod, dateRange)}
+                            className="px-4 py-2 bg-[#7e22ce] text-white text-sm font-medium rounded-lg hover:bg-[#6b21a8] transition-colors"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                ) : chartData.length === 0 ? (
+                    <div className="h-full flex items-center justify-center">
+                        <p className="text-gray-400 font-medium">No likeability data available for this period</p>
+                    </div>
+                ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                                <filter id="shadow" height="130%">
+                                    <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#a855f7" floodOpacity="0.3" />
+                                </filter>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                            <XAxis
+                                dataKey="name"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#6b7280', fontSize: 11, fontWeight: 500 }}
+                                dy={10}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#6b7280', fontSize: 11, fontWeight: 500 }}
+                                tickFormatter={(value) => `${value}%`}
+                            />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 20px -5px rgb(0 0 0 / 0.1)' }}
+                                itemStyle={{ color: '#a855f7', fontWeight: 'bold' }}
+                                formatter={(value: number | undefined) => value !== undefined ? [`${value}%`, 'Likeability'] : ['', '']}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#a855f7"
+                                strokeWidth={4}
+                                dot={false}
+                                activeDot={{ r: 8, fill: "#fff", stroke: "#a855f7", strokeWidth: 3 }}
+                                filter="url(#shadow)"
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

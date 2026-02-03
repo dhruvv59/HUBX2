@@ -17,7 +17,9 @@ import {
 // Matches the visual icons from the image
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Gauge }, // Speedometer/Gauge
-    { name: "AI Features", href: "/ai-features", icon: ClipboardCheck, badge: 3 }, // Clipboard with check (Visual Slot 2)
+    { name: "Practice Papers", href: "/practice-papers", icon: ClipboardCheck, badge: 3 }, // Clipboard with check (Visual Slot 2)
+
+
     { name: "Public Paper", href: "/papers", icon: Files, badge: 2 }, // Stacked files
     { name: "Smart AI Assessment", href: "/assessments", icon: Wand2 }, // Magic Wand (Visual Slot 4 - User Confirmed Assessment)
     { name: "Excursion", href: "/excursion", icon: Compass }, // Compass
@@ -34,7 +36,7 @@ export function Sidebar({ className, onClose, isMobile }: SidebarProps) {
 
     return (
         <div className={cn(
-            "h-full bg-white border-r border-[#f3f4f6] flex flex-col z-50 transition-all duration-300",
+            "h-full bg-[#E8EAEA] border-r border-[#f3f4f6] flex flex-col z-50 transition-all duration-300",
             isMobile ? "w-[280px] items-start p-6" : "hidden md:flex w-[100px] items-center py-8 fixed left-0 top-0 bottom-0",
             className
         )}>
@@ -56,7 +58,7 @@ export function Sidebar({ className, onClose, isMobile }: SidebarProps) {
             </div>
 
             {/* Navigation */}
-            <div className={cn("flex-1 w-full space-y-4 md:space-y-8 flex flex-col", isMobile ? "items-start" : "items-center")}>
+            <div className={cn("flex-1 w-full space-y-4 md:space-y-8 flex flex-col overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent", isMobile ? "items-start" : "items-center")}>
                 {navigation.map((item) => {
                     const isActive = pathname.startsWith(item.href);
 

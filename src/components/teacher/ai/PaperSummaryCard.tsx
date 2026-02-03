@@ -63,6 +63,13 @@ export function PaperSummaryCard({ config, showChaptersList = false }: { config:
                     <label className="block text-[10px] font-bold text-[#8b5cf6] uppercase tracking-wider mb-1">PAPER PRICE</label>
                     <p className="text-base font-extrabold text-gray-900">₹{config.price}</p>
                 </div>
+
+                <div className="border-t border-gray-50 pt-3">
+                    <label className="block text-[10px] font-bold text-[#8b5cf6] uppercase tracking-wider mb-1">ACCESS</label>
+                    <p className="text-sm font-bold text-gray-800">
+                        {config.schoolOnly ? "Free for School (via code)" : "Public (Paid)"}
+                    </p>
+                </div>
             </div>
         </div>
     );

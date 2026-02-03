@@ -1,7 +1,60 @@
 
 import { TeacherDashboardData } from "@/types/teacher";
 
+/**
+ * Teacher Dashboard Data Service
+ * 
+ * TODO: Backend API Integration Required
+ * =====================================
+ * 
+ * This service currently returns mock data for development/testing purposes.
+ * When the backend API is ready, replace this mock implementation with actual API calls.
+ * 
+ * Expected API Endpoints:
+ * -----------------------
+ * 1. GET /api/teacher/dashboard
+ *    - Returns: Complete dashboard data (stats, charts, notifications)
+ *    - Auth: Required (Bearer token)
+ * 
+ * 2. GET /api/teacher/dashboard/revenue?period={period}&from={date}&to={date}
+ *    - Params: period ('1month'|'3months'|'6months'|'custom'), from (ISO date), to (ISO date)
+ *    - Returns: { data: ChartDataPoint[] }
+ *    - Auth: Required
+ * 
+ * 3. GET /api/teacher/dashboard/likeability?period={period}&from={date}&to={date}
+ *    - Params: period, from, to (same as revenue endpoint)
+ *    - Returns: { data: ChartDataPoint[] }
+ *    - Auth: Required
+ * 
+ * Expected Response Format:
+ * ------------------------
+ * {
+ *   success: boolean,
+ *   data: TeacherDashboardData | ChartDataPoint[],
+ *   error?: string
+ * }
+ * 
+ * Error Handling:
+ * ---------------
+ * - Network errors: Timeout, connection refused, etc.
+ * - Auth errors: 401 Unauthorized, 403 Forbidden
+ * - Validation errors: 400 Bad Request with error details
+ * - Server errors: 500 Internal Server Error
+ */
+
 export async function getTeacherDashboardData(): Promise<TeacherDashboardData> {
+    // TODO: Replace with actual API call when backend is ready
+    // Example implementation:
+    // const response = await fetch('/api/teacher/dashboard', {
+    //     headers: {
+    //         'Authorization': `Bearer ${getAuthToken()}`,
+    //         'Content-Type': 'application/json'
+    //     }
+    // });
+    // if (!response.ok) throw new Error('Failed to fetch dashboard data');
+    // const result = await response.json();
+    // return result.data;
+
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
 

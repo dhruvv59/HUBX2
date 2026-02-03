@@ -16,7 +16,7 @@ export function PublishSuccessModal({ isOpen, onClose }: PublishSuccessModalProp
 
     const handleViewPapers = () => {
         // Navigate to public papers list
-        router.push("/teacher/papers");
+        router.push("/teacher/public-papers");
     };
 
     return (
