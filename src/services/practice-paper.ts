@@ -5,7 +5,7 @@
  * Production-ready with error handling, retries, and mock data fallback
  */
 
-import { httpClient } from '@/lib/http-client';
+import { http } from '@/lib/http-client';
 import type {
     GetPapersParams,
     GetPapersResponse,
@@ -226,7 +226,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
             }
         });
 
-        const response = await httpClient.get<GetPapersResponse>(
+        const response = await http.get<GetPapersResponse>(
             `${ENDPOINTS.getPapers}?${queryParams.toString()}`
         );
 
@@ -258,7 +258,7 @@ export async function getPaperById(id: string): Promise<GetPaperDetailsResponse>
     }
 
     try {
-        const response = await httpClient.get<GetPaperDetailsResponse>(
+        const response = await http.get<GetPaperDetailsResponse>(
             ENDPOINTS.getPaper(id)
         );
         return response;
@@ -288,7 +288,7 @@ export async function startTest(paperId: string): Promise<StartTestResponse> {
     }
 
     try {
-        const response = await httpClient.post<StartTestResponse>(
+        const response = await http.post<StartTestResponse>(
             ENDPOINTS.startTest(paperId),
             { paperId }
         );
@@ -331,7 +331,7 @@ export async function submitTest(
     }
 
     try {
-        const response = await httpClient.post<SubmitTestResponse>(
+        const response = await http.post<SubmitTestResponse>(
             ENDPOINTS.submitTest(paperId),
             { attemptId, answers }
         );
