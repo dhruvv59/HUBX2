@@ -140,8 +140,8 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
                         <button
                             onClick={() => handlePeriodChange('1month')}
                             className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '1month'
-                                    ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
-                                    : 'text-gray-500 hover:bg-gray-200'
+                                ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-200'
                                 }`}
                         >
                             Last Month
@@ -149,8 +149,8 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
                         <button
                             onClick={() => handlePeriodChange('3months')}
                             className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '3months'
-                                    ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
-                                    : 'text-gray-500 hover:bg-gray-200'
+                                ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-200'
                                 }`}
                         >
                             Last 3 Months
@@ -158,8 +158,8 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
                         <button
                             onClick={() => handlePeriodChange('6months')}
                             className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '6months'
-                                    ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
-                                    : 'text-gray-500 hover:bg-gray-200'
+                                ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-200'
                                 }`}
                         >
                             Last 6 Months
@@ -241,7 +241,7 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
                                 cursor={{ fill: '#4f46e5', opacity: 0.05 }}
                                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 20px -5px rgb(0 0 0 / 0.1)', padding: '8px 12px' }}
                                 itemStyle={{ color: '#4f46e5', fontWeight: 'bold' }}
-                                formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                                formatter={(value: any) => [`₹${value?.toLocaleString() ?? 0}`, 'Revenue']}
                             />
                             <Bar
                                 dataKey="value"
