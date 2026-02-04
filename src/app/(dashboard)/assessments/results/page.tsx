@@ -14,7 +14,9 @@ import {
     ChevronRight,
     Sparkles,
     ChevronDown,
-    Loader2
+    Loader2,
+    Filter,
+    X
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -195,19 +197,24 @@ export default function PreviousResultsPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [results, setResults] = useState<AssessmentResult[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [filters, setFilters] = useState<AssessmentFilters>({
         subject: "All",
         level: "All",
         search: "",
-        sortBy: "Most Recent"
+        sortBy: "Most Recent",
+        page: 1,
+        limit: 6
     });
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     // Fetch Data
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const data = await getPastAssessments(filters);
-            setResults(data);
+            const response = await getPastAssessments(filters);
+            setResults(response.data);
+            setTotalCount(response.total);
         } catch (error) {
             console.error("Failed to fetch assessments", error);
         } finally {
@@ -216,16 +223,24 @@ export default function PreviousResultsPage() {
     }, [filters]);
 
     useEffect(() => {
-        // Debounce search if needed, but for now simple effect
+        // Debounce search if needed
         const timer = setTimeout(() => {
             fetchData();
-        }, 300); // Simple debounce for text search
+        }, 300);
         return () => clearTimeout(timer);
     }, [fetchData]);
 
     const handleFilterChange = (newFilters: Partial<AssessmentFilters>) => {
-        setFilters(prev => ({ ...prev, ...newFilters }));
+        setFilters(prev => ({ ...prev, ...newFilters, page: 1 })); // Reset to page 1 on filter change
     };
+
+    const handlePageChange = (newPage: number) => {
+        setFilters(prev => ({ ...prev, page: newPage }));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const totalPages = Math.ceil(totalCount / (filters.limit || 6));
+    const currentPage = filters.page || 1;
 
     return (
         <div className="min-h-screen bg-[#fafbfc] p-6 font-sans">
@@ -243,8 +258,35 @@ export default function PreviousResultsPage() {
             </div>
 
             <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-8">
-                {/* Left Sidebar Filter */}
-                <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
+                {/* Left Sidebar Filter - Desktop */}
+                <div className="hidden lg:block">
+                    <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
+                </div>
+
+                {/* Mobile Filter Drawer */}
+                {showMobileFilters && (
+                    <div className="fixed inset-0 z-50 lg:hidden font-sans">
+                        {/* Backdrop */}
+                        <div
+                            className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+                            onClick={() => setShowMobileFilters(false)}
+                        />
+
+                        {/* Drawer */}
+                        <div className="absolute right-0 top-0 bottom-0 w-[300px] bg-[#fafbfc] p-6 shadow-2xl overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-bold text-gray-900">Filters</h3>
+                                <button
+                                    onClick={() => setShowMobileFilters(false)}
+                                    className="p-2 bg-white rounded-full text-gray-400 hover:text-gray-600 border border-gray-100 shadow-sm"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </div>
+                            <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
+                        </div>
+                    </div>
+                )}
 
                 {/* Main Content List */}
                 <div className="flex-1 space-y-6">
@@ -261,18 +303,29 @@ export default function PreviousResultsPage() {
                             />
                         </div>
 
-                        <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                            <span className="text-sm font-medium text-gray-500">Sort By</span>
-                            <div className="relative">
-                                <button
-                                    onClick={() => handleFilterChange({
-                                        sortBy: filters.sortBy === "Most Recent" ? "Score High-Low" : "Most Recent"
-                                    })}
-                                    className="flex items-center space-x-2 px-4 py-2 bg-[#eaeaff] rounded-lg text-[#5b5bd6] text-sm font-bold min-w-[140px] justify-between"
-                                >
-                                    <span>{filters.sortBy}</span>
-                                    <ChevronDown className="h-3 w-3" />
-                                </button>
+                        <div className="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-end">
+                            {/* Mobile Filter Button */}
+                            <button
+                                onClick={() => setShowMobileFilters(true)}
+                                className="lg:hidden flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-sm shadow-sm hover:bg-gray-50 transition-colors"
+                            >
+                                <Filter className="h-4 w-4" />
+                                <span>Filter</span>
+                            </button>
+
+                            <div className="flex items-center space-x-2">
+                                <span className="hidden sm:inline text-sm font-medium text-gray-500">Sort By</span>
+                                <div className="relative">
+                                    <button
+                                        onClick={() => handleFilterChange({
+                                            sortBy: filters.sortBy === "Most Recent" ? "Score High-Low" : "Most Recent"
+                                        })}
+                                        className="flex items-center space-x-2 px-4 py-2 bg-[#eaeaff] rounded-lg text-[#5b5bd6] text-sm font-bold min-w-[140px] justify-between"
+                                    >
+                                        <span>{filters.sortBy}</span>
+                                        <ChevronDown className="h-3 w-3" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -300,22 +353,48 @@ export default function PreviousResultsPage() {
                         )}
                     </div>
 
-                    {/* Pagination - Static for now, can be made dynamic if API supports it */}
-                    {!isLoading && results.length > 0 && (
+                    {/* Pagination */}
+                    {!isLoading && totalPages > 1 && (
                         <div className="flex items-center justify-center space-x-2 pt-8">
-                            <span className="text-sm text-gray-400 font-medium mr-2 cursor-pointer hover:text-gray-600">Prev</span>
-                            {[1].map(page => (
-                                <button
-                                    key={page}
-                                    className={cn(
-                                        "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
-                                        page === 1 ? "bg-[#eaeaff] text-[#5b5bd6]" : "text-gray-500 hover:bg-gray-100"
-                                    )}
-                                >
-                                    {page}
-                                </button>
-                            ))}
-                            <span className="text-sm text-[#5b5bd6] font-bold ml-2 cursor-pointer">Next</span>
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className={cn(
+                                    "text-sm font-medium mr-2 transition-colors",
+                                    currentPage === 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                Prev
+                            </button>
+
+                            {Array.from({ length: totalPages }).map((_, i) => {
+                                const page = i + 1;
+                                return (
+                                    <button
+                                        key={page}
+                                        onClick={() => handlePageChange(page)}
+                                        className={cn(
+                                            "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
+                                            currentPage === page
+                                                ? "bg-[#eaeaff] text-[#5b5bd6]"
+                                                : "text-gray-500 hover:bg-gray-100"
+                                        )}
+                                    >
+                                        {page}
+                                    </button>
+                                );
+                            })}
+
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className={cn(
+                                    "text-sm font-bold ml-2 transition-colors",
+                                    currentPage === totalPages ? "text-gray-300 cursor-not-allowed" : "text-[#5b5bd6] hover:text-[#4f4fbe]"
+                                )}
+                            >
+                                Next
+                            </button>
                         </div>
                     )}
                 </div>

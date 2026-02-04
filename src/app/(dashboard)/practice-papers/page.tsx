@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * Practice Papers Page - Production Grade
+ * Practice Papers Page - Production Grade Mobile-Friendly
  * 
  * Features:
- * - Dynamic data from API
- * - Pagination with page numbers
- * - Subject and type filtering
- * - Real-time search
- * - Loading, error, and empty states
- * - Responsive design
+ * - Fully responsive mobile-first design
+ * - Touch-optimized interactions (44px minimum touch targets)
+ * - Dynamic data from API with proper error handling
+ * - Advanced pagination with mobile optimization
+ * - Real-time filtering and search
+ * - Professional loading states and animations
+ * - Accessible and production-ready
  * 
  * Backend Integration:
  * - GET /api/v1/practice-papers with pagination
@@ -134,62 +135,70 @@ export default function PracticePapersPage() {
     };
 
     return (
-        <div className="p-6 md:p-8 max-w-[1600px] mx-auto space-y-6">
+        <div className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
 
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            {/* Header - Mobile Optimized */}
+            <div className="flex flex-col gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                        <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
-                            <BookOpen className="h-6 w-6 text-white" />
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2.5 sm:gap-3">
+                        <div className="h-9 w-9 sm:h-10 sm:w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+                            <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
                         Practice Papers
                     </h1>
-                    <p className="text-gray-500 mt-2 text-base font-medium">
+                    <p className="text-gray-500 mt-2 text-sm sm:text-base font-medium leading-relaxed">
                         Master your subjects with practice tests and previous year papers
                     </p>
                 </div>
 
-                {/* Stats */}
-                <div className="flex gap-4">
-                    <div className="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-                        <p className="text-xs text-gray-500 font-medium">Completed</p>
-                        <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+                {/* Stats - Fully Mobile Responsive */}
+                <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
+                    <div className="bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <p className="text-xs text-gray-500 font-medium mb-1">Completed</p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-600">{stats.completed}</p>
                     </div>
-                    <div className="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-                        <p className="text-xs text-gray-500 font-medium">In Progress</p>
-                        <p className="text-2xl font-bold text-orange-600">{stats.inProgress}</p>
+                    <div className="bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <p className="text-xs text-gray-500 font-medium mb-1">In Progress</p>
+                        <p className="text-xl sm:text-2xl font-bold text-orange-600">{stats.inProgress}</p>
+                    </div>
+                    <div className="bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <p className="text-xs text-gray-500 font-medium mb-1">Assigned</p>
+                        <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.assigned}</p>
+                    </div>
+                    <div className="bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <p className="text-xs text-gray-500 font-medium mb-1">Total</p>
+                        <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.total}</p>
                     </div>
                 </div>
             </div>
 
-            {/* Filter Bar */}
+            {/* Filter Bar - Mobile-First Design */}
             <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                <div className="flex flex-col md:flex-row gap-4">
-                    {/* Search */}
+                <div className="flex flex-col gap-4">
+                    {/* Search - Touch Optimized */}
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                         <input
                             type="text"
                             placeholder="Search papers..."
                             value={filters.search}
                             onChange={(e) => handleSearchChange(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full pl-10 pr-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base min-h-[44px] sm:min-h-0"
                         />
                     </div>
 
-                    {/* Type Filter Tabs */}
-                    <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
+                    {/* Type Filter Tabs - Responsive Grid */}
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 bg-gray-100 p-1.5 rounded-xl">
                         {(['all', 'assigned', 'previous', 'practice'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTypeChange(tab)}
                                 disabled={isLoading}
                                 className={cn(
-                                    "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+                                    "px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-sm font-semibold transition-all min-h-[44px] sm:min-h-0 touch-manipulation",
                                     filters.type === tab
                                         ? "bg-white text-blue-600 shadow-sm"
-                                        : "text-gray-600 hover:text-gray-900",
+                                        : "text-gray-600 hover:text-gray-900 active:bg-gray-200",
                                     isLoading && "opacity-50 cursor-not-allowed"
                                 )}
                             >
@@ -199,18 +208,18 @@ export default function PracticePapersPage() {
                     </div>
                 </div>
 
-                {/* Subject Pills */}
-                <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                {/* Subject Pills - Enhanced Scroll */}
+                <div className="flex gap-2 mt-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
                     {SUBJECTS.map((subject) => (
                         <button
                             key={subject}
                             onClick={() => handleSubjectChange(subject)}
                             disabled={isLoading}
                             className={cn(
-                                "px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap",
+                                "px-4 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap min-h-[44px] flex items-center touch-manipulation snap-start",
                                 filters.subject === subject
                                     ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200",
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300",
                                 isLoading && "opacity-50 cursor-not-allowed"
                             )}
                         >
@@ -220,49 +229,49 @@ export default function PracticePapersPage() {
                 </div>
             </div>
 
-            {/* Loading State */}
+            {/* Loading State - Enhanced */}
             {isLoading && (
                 <div className="flex items-center justify-center py-20">
                     <div className="text-center">
                         <Loader2 className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
-                        <p className="text-gray-600 font-medium">Loading papers...</p>
+                        <p className="text-gray-600 font-medium text-sm sm:text-base">Loading papers...</p>
                     </div>
                 </div>
             )}
 
-            {/* Error State */}
+            {/* Error State - Mobile Optimized */}
             {error && !isLoading && (
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 text-center">
                     <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to load papers</h3>
-                    <p className="text-red-700 mb-4">{error.message}</p>
+                    <p className="text-red-700 mb-4 text-sm sm:text-base px-4">{error.message}</p>
                     <button
                         onClick={fetchPapers}
-                        className="px-6 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors"
+                        className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 active:bg-red-800 transition-colors min-h-[44px] touch-manipulation"
                     >
                         Try Again
                     </button>
                 </div>
             )}
 
-            {/* Papers Grid */}
+            {/* Papers Grid - Fully Responsive */}
             {!isLoading && !error && (
                 <>
                     {papers.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             {papers.map((paper) => (
                                 <PaperCard key={paper.id} paper={paper} />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-16">
+                        <div className="text-center py-16 px-4">
                             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">No papers found</h3>
-                            <p className="text-gray-500">Try adjusting your filters or search query</p>
+                            <p className="text-gray-500 text-sm sm:text-base">Try adjusting your filters or search query</p>
                         </div>
                     )}
 
-                    {/* Pagination */}
+                    {/* Pagination - Touch Optimized */}
                     {pagination.totalPages > 1 && (
                         <Pagination
                             currentPage={pagination.currentPage}
@@ -279,7 +288,7 @@ export default function PracticePapersPage() {
 }
 
 // ============================================
-// PAPER CARD COMPONENT
+// PAPER CARD COMPONENT - MOBILE OPTIMIZED
 // ============================================
 
 function PaperCard({ paper }: { paper: Paper }) {
@@ -311,17 +320,17 @@ function PaperCard({ paper }: { paper: Paper }) {
         'not-started': {
             label: 'Start Test',
             icon: Play,
-            color: 'bg-blue-600 hover:bg-blue-700 text-white'
+            color: 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white'
         },
         'in-progress': {
             label: 'Continue',
             icon: ChevronRight,
-            color: 'bg-orange-600 hover:bg-orange-700 text-white'
+            color: 'bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white'
         },
         'completed': {
             label: 'Review',
             icon: Eye,
-            color: 'bg-green-600 hover:bg-green-700 text-white'
+            color: 'bg-green-600 hover:bg-green-700 active:bg-green-800 text-white'
         }
     };
 
@@ -351,45 +360,47 @@ function PaperCard({ paper }: { paper: Paper }) {
     };
 
     return (
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all group">
-            {/* Header */}
-            <div className="flex items-start justify-between mb-4">
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+            {/* Header - Responsive */}
+            <div className="flex items-start justify-between mb-3 sm:mb-4 gap-2">
                 <div className={cn(
-                    "px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5",
+                    "px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-full text-xs font-bold border flex items-center gap-1.5",
                     config.color
                 )}>
-                    <TypeIcon className="h-3.5 w-3.5" />
-                    {config.label}
+                    <TypeIcon className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="truncate max-w-[120px] sm:max-w-none">{config.label}</span>
                 </div>
                 <span className={cn(
-                    "px-2 py-1 rounded-lg text-xs font-bold uppercase",
+                    "px-2 py-1 rounded-lg text-xs font-bold uppercase flex-shrink-0",
                     difficultyConfig[paper.difficulty]
                 )}>
                     {paper.difficulty}
                 </span>
             </div>
 
-            {/* Title */}
-            <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">
+            {/* Title - Mobile Optimized */}
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3rem] sm:min-h-[3.5rem] leading-tight">
                 {paper.title}
             </h3>
 
             {/* Subject */}
-            <p className="text-sm font-medium text-gray-500 mb-4">{paper.subject}</p>
+            <p className="text-sm font-medium text-gray-500 mb-3 sm:mb-4">{paper.subject}</p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-                <div className="text-center py-2 bg-gray-50 rounded-lg">
+            {/* Stats - Compact Mobile Layout */}
+            <div className="grid grid-cols-3 gap-2 mb-3 sm:mb-4">
+                <div className="text-center py-2.5 sm:py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <FileText className="h-4 w-4 text-gray-400 mx-auto mb-1" />
                     <p className="text-xs font-bold text-gray-900">{paper.questions}</p>
-                    <p className="text-[10px] text-gray-500">Questions</p>
+                    <p className="text-[10px] text-gray-500 hidden sm:block">Questions</p>
+                    <p className="text-[10px] text-gray-500 sm:hidden">Ques.</p>
                 </div>
-                <div className="text-center py-2 bg-gray-50 rounded-lg">
+                <div className="text-center py-2.5 sm:py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <Clock className="h-4 w-4 text-gray-400 mx-auto mb-1" />
                     <p className="text-xs font-bold text-gray-900">{paper.duration}m</p>
-                    <p className="text-[10px] text-gray-500">Duration</p>
+                    <p className="text-[10px] text-gray-500 hidden sm:block">Duration</p>
+                    <p className="text-[10px] text-gray-500 sm:hidden">Time</p>
                 </div>
-                <div className="text-center py-2 bg-gray-50 rounded-lg">
+                <div className="text-center py-2.5 sm:py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <Trophy className="h-4 w-4 text-gray-400 mx-auto mb-1" />
                     <p className="text-xs font-bold text-gray-900">{paper.marks}</p>
                     <p className="text-[10px] text-gray-500">Marks</p>
@@ -398,10 +409,10 @@ function PaperCard({ paper }: { paper: Paper }) {
 
             {/* Score/Status */}
             {paper.status === 'completed' && paper.score !== undefined && (
-                <div className="mb-4 p-3 bg-green-50 rounded-xl border border-green-200">
+                <div className="mb-3 sm:mb-4 p-3 bg-green-50 rounded-xl border border-green-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-600" />
+                            <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                             <span className="text-sm font-semibold text-green-900">Completed</span>
                         </div>
                         <span className="text-lg font-bold text-green-600">
@@ -411,28 +422,34 @@ function PaperCard({ paper }: { paper: Paper }) {
                 </div>
             )}
 
-            {/* Assigned Test Info */}
+            {/* Assigned Test Info - Mobile Friendly */}
             {paper.type === 'assigned' && paper.dueDate && paper.status !== 'completed' && (
-                <div className="mb-4 p-3 bg-orange-50 rounded-xl border border-orange-200">
-                    <div className="flex items-center gap-2 mb-1">
-                        <AlertCircle className="h-4 w-4 text-orange-600" />
-                        <span className="text-xs font-semibold text-orange-900">Due: {formatDate(paper.dueDate)}</span>
+                <div className="mb-3 sm:mb-4 p-3 bg-orange-50 rounded-xl border border-orange-200">
+                    <div className="flex items-start gap-2 mb-1">
+                        <AlertCircle className="h-4 w-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                            <span className="text-xs font-semibold text-orange-900 block">
+                                Due: {formatDate(paper.dueDate)}
+                            </span>
+                            <p className="text-xs text-orange-700 truncate mt-0.5">
+                                Assigned by: {paper.assignedBy}
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-xs text-orange-700">Assigned by: {paper.assignedBy}</p>
                 </div>
             )}
 
-            {/* Attempts */}
+            {/* Attempts - Compact */}
             {paper.attempts > 0 && (
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-gray-500 mb-3 sm:mb-4 truncate">
                     {paper.attempts} attempt{paper.attempts > 1 ? 's' : ''}
-                    {paper.lastAttemptedAt && ` • Last: ${formatRelativeTime(paper.lastAttemptedAt)}`}
+                    {paper.lastAttemptedAt && ` • ${formatRelativeTime(paper.lastAttemptedAt)}`}
                 </p>
             )}
 
-            {/* Action Button */}
+            {/* Action Button - Touch Optimized */}
             <button className={cn(
-                "w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg",
+                "w-full py-3.5 sm:py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl active:scale-98 min-h-[44px] touch-manipulation",
                 statusConfig[paper.status].color
             )}>
                 <StatusIcon className="h-4 w-4" />
@@ -443,7 +460,7 @@ function PaperCard({ paper }: { paper: Paper }) {
 }
 
 // ============================================
-// PAGINATION COMPONENT
+// PAGINATION COMPONENT - MOBILE OPTIMIZED
 // ============================================
 
 interface PaginationProps {
@@ -455,34 +472,44 @@ interface PaginationProps {
 }
 
 function Pagination({ currentPage, totalPages, hasNextPage, hasPrevPage, onPageChange }: PaginationProps) {
+    // Detect if mobile for dynamic page number display
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 640);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     // Generate page numbers to display
     const getPageNumbers = () => {
         const pages: (number | string)[] = [];
-        const maxVisible = 5;
+        const maxVisible = isMobile ? 3 : 5;
 
         if (totalPages <= maxVisible) {
-            // Show all pages
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
-            // Show with ellipsis
-            if (currentPage <= 3) {
-                // Near start
-                for (let i = 1; i <= 4; i++) pages.push(i);
-                pages.push('...');
-                pages.push(totalPages);
-            } else if (currentPage >= totalPages - 2) {
-                // Near end
+            if (currentPage <= 2) {
+                for (let i = 1; i <= Math.min(3, totalPages); i++) pages.push(i);
+                if (totalPages > 3) {
+                    pages.push('...');
+                    pages.push(totalPages);
+                }
+            } else if (currentPage >= totalPages - 1) {
                 pages.push(1);
                 pages.push('...');
-                for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+                for (let i = Math.max(totalPages - 2, 2); i <= totalPages; i++) pages.push(i);
             } else {
-                // Middle
                 pages.push(1);
-                pages.push('...');
-                for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
-                pages.push('...');
+                if (currentPage > 2) pages.push('...');
+                pages.push(currentPage);
+                if (currentPage < totalPages - 1) pages.push('...');
                 pages.push(totalPages);
             }
         }
@@ -491,27 +518,28 @@ function Pagination({ currentPage, totalPages, hasNextPage, hasPrevPage, onPageC
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 mt-8">
-            {/* Previous Button */}
+        <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8 flex-wrap px-2">
+            {/* Previous Button - Mobile Optimized */}
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={!hasPrevPage}
                 className={cn(
-                    "px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all",
+                    "px-3 sm:px-4 py-3 sm:py-2 rounded-xl font-semibold text-sm flex items-center gap-1.5 sm:gap-2 transition-all min-h-[44px] sm:min-h-0 touch-manipulation",
                     hasPrevPage
-                        ? "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                        ? "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 shadow-sm"
                         : "bg-gray-100 text-gray-400 cursor-not-allowed"
                 )}
             >
                 <ChevronLeft className="h-4 w-4" />
-                Previous
+                <span className="hidden xs:inline sm:inline">Previous</span>
+                <span className="xs:hidden sm:hidden">Prev</span>
             </button>
 
-            {/* Page Numbers */}
+            {/* Page Numbers - Touch Friendly */}
             <div className="flex gap-2">
                 {getPageNumbers().map((page, index) => (
                     page === '...' ? (
-                        <span key={`ellipsis-${index}`} className="px-4 py-2 text-gray-400">
+                        <span key={`ellipsis-${index}`} className="px-2 sm:px-3 py-2 text-gray-400 flex items-center justify-center min-w-[36px]">
                             ...
                         </span>
                     ) : (
@@ -519,10 +547,10 @@ function Pagination({ currentPage, totalPages, hasNextPage, hasPrevPage, onPageC
                             key={page}
                             onClick={() => onPageChange(page as number)}
                             className={cn(
-                                "px-4 py-2 rounded-xl font-semibold text-sm transition-all",
+                                "px-3 sm:px-4 py-3 sm:py-2 rounded-xl font-semibold text-sm transition-all min-w-[44px] min-h-[44px] sm:min-w-[40px] sm:min-h-0 flex items-center justify-center touch-manipulation",
                                 currentPage === page
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105"
+                                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 shadow-sm"
                             )}
                         >
                             {page}
@@ -531,18 +559,18 @@ function Pagination({ currentPage, totalPages, hasNextPage, hasPrevPage, onPageC
                 ))}
             </div>
 
-            {/* Next Button */}
+            {/* Next Button - Mobile Optimized */}
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={!hasNextPage}
                 className={cn(
-                    "px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all",
+                    "px-3 sm:px-4 py-3 sm:py-2 rounded-xl font-semibold text-sm flex items-center gap-1.5 sm:gap-2 transition-all min-h-[44px] sm:min-h-0 touch-manipulation",
                     hasNextPage
-                        ? "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                        ? "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 shadow-sm"
                         : "bg-gray-100 text-gray-400 cursor-not-allowed"
                 )}
             >
-                Next
+                <span>Next</span>
                 <ChevronRight className="h-4 w-4" />
             </button>
         </div>

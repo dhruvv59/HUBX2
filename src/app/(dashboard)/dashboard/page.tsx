@@ -102,14 +102,12 @@ export default function StudentDashboard() {
                 <h1 className="text-[24px] md:text-[28px] font-bold text-[#111827] tracking-tight">Hello, {data.user.name}</h1>
             </div>
 
-
-
             <div className="grid grid-cols-12 gap-6">
                 {/* LEFT COLUMN (Main Content) */}
-                <div className="col-span-12 lg:col-span-9 space-y-5">
+                <div className="col-span-12 lg:col-span-9 flex flex-col gap-5">
 
-                    {/* Top Statistics Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    {/* Top Statistics Cards - 2 columns on mobile */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
                         {data.stats.map(stat => (
                             <StatCard key={stat.id} data={stat} />
                         ))}
@@ -118,11 +116,26 @@ export default function StudentDashboard() {
                     {/* Excursion Banner */}
                     <ExcursionBanner data={data.latestExcursion} />
 
+                    {/* Papers & AI Assessment Cards - Mobile Only (Above Performance Chart) */}
+                    <div className="grid grid-cols-2 gap-3 lg:hidden">
+                        {data.papers.map(paper => (
+                            <PaperCard key={paper.id} data={paper} />
+                        ))}
+
+                        {/* Purchased Papers Card - Only show if student has purchased papers */}
+                        {purchasedPapersCount > 0 && (
+                            <PurchasedPapersCard count={purchasedPapersCount} />
+                        )}
+
+                        {/* AI Assessment Banner */}
+                        <AIAssessmentBanner />
+                    </div>
+
                     {/* Performance Analysis Chart */}
                     <PerformanceChart initialData={data.performanceData} />
 
-                    {/* Bottom Charts Row */}
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    {/* Bottom Charts Row - Show before papers on mobile */}
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 order-1 lg:order-none">
                         {/* Donut Chart Widget */}
                         <SubjectPerformanceWidget data={data.subjectPerformance} />
 
@@ -131,19 +144,36 @@ export default function StudentDashboard() {
                     </div>
 
                     {/* Syllabus Tracking Row */}
-                    <div className="w-full">
+                    <div className="w-full order-3 lg:order-none">
                         <SyllabusCoverageWidget data={data.syllabus} />
                     </div>
 
                     {/* New HubX Smart Tests Section */}
-                    <HubXSmartTestsWidget tests={data.testRecommendations} />
+                    <div className="order-4 lg:order-none">
+                        <HubXSmartTestsWidget tests={data.testRecommendations} />
+                    </div>
 
                 </div>
 
 
 
                 {/* RIGHT COLUMN (Widgets) */}
-                <div className="col-span-12 lg:col-span-3 space-y-5">
+                <div className="col-span-12 lg:col-span-3 flex flex-col gap-5">
+
+                    {/* Papers & AI Assessment Cards - Desktop Only (Sidebar) */}
+                    <div className="hidden lg:grid lg:grid-cols-1 gap-5">
+                        {data.papers.map(paper => (
+                            <PaperCard key={paper.id} data={paper} />
+                        ))}
+
+                        {/* Purchased Papers Card - Only show if student has purchased papers */}
+                        {purchasedPapersCount > 0 && (
+                            <PurchasedPapersCard count={purchasedPapersCount} />
+                        )}
+
+                        {/* AI Assessment Banner */}
+                        <AIAssessmentBanner />
+                    </div>
 
                     {/* Upcoming Exams - New Widget to fill space */}
                     <div className="h-auto">
@@ -158,23 +188,6 @@ export default function StudentDashboard() {
 
                     {/* Recent Activity / History */}
                     <RecentActivityWidget activities={data.recentActivities} />
-
-
-                    {/* Papers & AI Assessment Cards */}
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
-                        {data.papers.map(paper => (
-                            <PaperCard key={paper.id} data={paper} />
-                        ))}
-
-                        {/* Purchased Papers Card - Only show if student has purchased papers */}
-                        {purchasedPapersCount > 0 && (
-                            <PurchasedPapersCard count={purchasedPapersCount} />
-                        )}
-
-                        {/* AI Assessment Banner */}
-                        <AIAssessmentBanner />
-                    </div>
 
                     {/* Notifications & AI Focus Area Combined Widget */}
                     <CombinedWidget notifications={data.notifications} focusAreas={data.focusAreas} />

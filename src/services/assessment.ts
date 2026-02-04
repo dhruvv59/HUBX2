@@ -9,29 +9,45 @@ const MOCK_API_DATA = {
             subject_id: "science",
             display_name: "Science",
             current_score: 92,
-            chapters: Array.from({ length: 10 }).map((_, i) => ({ sys_id: `sci-${i}`, title: `Science Chapter ${i + 1}` })),
+            total_q_count: 500,
+            chapters: Array.from({ length: 10 }).map((_, i) => ({
+                sys_id: `sci-${i}`,
+                title: `Science Chapter ${i + 1}`,
+                q_count: 50
+            })),
         },
         {
             subject_id: "mathematics",
             display_name: "Mathematics",
             current_score: 59,
-            chapters: Array.from({ length: 15 }).map((_, i) => ({ sys_id: `math-${i}`, title: `Math Chapter ${i + 1}` })),
+            total_q_count: 450,
+            chapters: Array.from({ length: 15 }).map((_, i) => ({
+                sys_id: `math-${i}`,
+                title: `Math Chapter ${i + 1}`,
+                q_count: 30
+            })),
         },
         {
-            subject_id: "geography", // Normalized ID
+            subject_id: "geography",
             display_name: "Geography",
             current_score: 84,
-            chapters: Array.from({ length: 8 }).map((_, i) => ({ sys_id: `geo-${i}`, title: `Geography Chapter ${i + 1}` })),
+            total_q_count: 320,
+            chapters: Array.from({ length: 8 }).map((_, i) => ({
+                sys_id: `geo-${i}`,
+                title: `Geography Chapter ${i + 1}`,
+                q_count: 40
+            })),
         },
         {
             subject_id: "social_science",
             display_name: "Social Science",
             current_score: 37,
+            total_q_count: 200,
             chapters: [
-                { sys_id: "ss-1", title: "The French Revolution" },
-                { sys_id: "ss-2", title: "Socialism in Europe and the Russian Revolution" },
-                { sys_id: "ss-3", title: "Nazism and the Rise of Hitler" },
-                { sys_id: "ss-4", title: "Forest, Society and Colonialism" },
+                { sys_id: "ss-1", title: "The French Revolution", q_count: 50 },
+                { sys_id: "ss-2", title: "Socialism in Europe and the Russian Revolution", q_count: 50 },
+                { sys_id: "ss-3", title: "Nazism and the Rise of Hitler", q_count: 50 },
+                { sys_id: "ss-4", title: "Forest, Society and Colonialism", q_count: 50 },
             ]
         }
     ] as ApiSubject[],
@@ -111,10 +127,12 @@ function transformSubject(apiSubject: ApiSubject): Subject {
         id: apiSubject.subject_id,
         name: apiSubject.display_name,
         score: apiSubject.current_score,
-        performance: perf, // Calculated field
+        performance: perf,
+        totalQuestions: apiSubject.total_q_count,
         chapters: apiSubject.chapters.map(ch => ({
             id: ch.sys_id,
-            name: ch.title
+            name: ch.title,
+            questionCount: ch.q_count
         }))
     };
 }
@@ -198,10 +216,23 @@ export async function getAssessmentSubjects(): Promise<Subject[]> {
 /**
  * Fetch past assessment results with optional filtering.
  */
-export async function getPastAssessments(filters?: AssessmentFilters): Promise<AssessmentResult[]> {
+export async function getPastAssessments(filters?: AssessmentFilters): Promise<{ data: AssessmentResult[], total: number }> {
     return new Promise((resolve) => {
         setTimeout(() => {
-            let results = MOCK_API_DATA.pastExams.map(transformAssessmentResult);
+            // Generate more mock data for pagination testing
+            const baseResults = MOCK_API_DATA.pastExams.map(transformAssessmentResult);
+            let results = [...baseResults];
+
+            // Generate extra mock items if needed
+            for (let i = 1; i < 20; i++) {
+                results.push({
+                    ...baseResults[i % 2],
+                    id: `mock-${i}`,
+                    title: `Mock Assessment ${i}`,
+                    percentage: Math.floor(Math.random() * 100),
+                    date: "01 Nov 2025"
+                });
+            }
 
             if (filters) {
                 if (filters.search) {
@@ -216,13 +247,26 @@ export async function getPastAssessments(filters?: AssessmentFilters): Promise<A
                     results = results.filter(r => r.level === filters.level);
                 }
 
-                // Sorting would usually happen on backend, but mocked here
+                if (filters.subject && filters.subject !== "All") {
+                    // Mock subject filtering logic since mock data lacks explicit subject field in list
+                    // We'll just randomly filter for demo purposes or ignore if strictly following types
+                }
+
+                // Sorting
                 if (filters.sortBy === "Score High-Low") {
                     results.sort((a, b) => b.percentage - a.percentage);
+                } else if (filters.sortBy === "Most Recent") {
+                    // Mock logic for date sort
                 }
             }
 
-            resolve(results);
+            const total = results.length;
+            const page = filters?.page || 1;
+            const limit = filters?.limit || 10;
+            const startIndex = (page - 1) * limit;
+            const paginatedData = results.slice(startIndex, startIndex + limit);
+
+            resolve({ data: paginatedData, total });
         }, 600);
     });
 }

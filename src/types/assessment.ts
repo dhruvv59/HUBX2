@@ -47,6 +47,8 @@ export interface AssessmentFilters {
     level?: string; // "All" | AssessmentLevel
     search?: string;
     sortBy?: "Most Recent" | "Score High-Low" | "Score Low-High";
+    page?: number;
+    limit?: number;
 }
 
 export type PerformanceLevel = "Excellent" | "Average" | "Poor";
@@ -54,6 +56,7 @@ export type PerformanceLevel = "Excellent" | "Average" | "Poor";
 export interface Chapter {
     id: string;
     name: string;
+    questionCount: number;
 }
 
 export interface Subject {
@@ -62,6 +65,7 @@ export interface Subject {
     score: number;
     performance: PerformanceLevel;
     chapters: Chapter[];
+    totalQuestions: number;
 }
 
 export interface PublicPaper {
@@ -146,12 +150,14 @@ export interface TestSettings {
 export interface ApiChapter {
     sys_id: string;
     title: string;
+    q_count: number;
 }
 
 export interface ApiSubject {
     subject_id: string;
     display_name: string;
     current_score: number; // 0-100
+    total_q_count: number;
     chapters: ApiChapter[];
 }
 

@@ -125,4 +125,84 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Remove focus outline from Recharts elements */
+  .recharts-wrapper,
+  .recharts-surface,
+  .recharts-layer,
+  .recharts-area,
+  .recharts-bar,
+  .recharts-pie,
+  .recharts-sector,
+  .recharts-line,
+  .recharts-curve,
+  svg,
+  svg *,
+  path,
+  rect,
+  circle,
+  g {
+    outline: none !important;
+  }
+
+  /* Remove focus outline from all SVG elements */
+  svg:focus,
+  svg *:focus {
+    outline: none !important;
+  }
+}
+
+/* Mobile-Friendly Utilities */
+@layer utilities {
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  /* Touch manipulation for better mobile performance */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Active scale animation for touch feedback */
+  .active\:scale-98:active {
+    transform: scale(0.98);
+  }
+
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+
+  /* Smooth scroll snap for horizontal scrolling */
+  .snap-x {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  /* Prevent text selection on buttons */
+  button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Smooth transitions for all interactive elements */
+  .transition-all {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }

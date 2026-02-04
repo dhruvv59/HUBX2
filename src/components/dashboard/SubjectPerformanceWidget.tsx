@@ -15,6 +15,22 @@ export function SubjectPerformanceWidget({ data }: SubjectPerformanceWidgetProps
     const [selectedSubject, setSelectedSubject] = React.useState(data.currentSubject);
     const [dateRange, setDateRange] = React.useState({ from: "01.09.2025", to: "01.10.2025" });
     const [chartMetrics, setChartMetrics] = React.useState(data.metrics);
+    const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+    // Close dropdown when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // In a real app, changing tabs/dates would trigger a new data fetch
     const handleTabChange = (tab: string) => {
@@ -55,6 +71,11 @@ export function SubjectPerformanceWidget({ data }: SubjectPerformanceWidgetProps
         setActiveTab("");
     };
 
+    const handleSubjectSelect = (subject: string) => {
+        setSelectedSubject(subject);
+        setIsDropdownOpen(false);
+    };
+
     // Find metrics for selected subject or default to first
     const currentMetric = chartMetrics.find(m => m.subject === selectedSubject) || chartMetrics[0];
     const percentage = currentMetric ? currentMetric.score : 0;
@@ -71,22 +92,27 @@ export function SubjectPerformanceWidget({ data }: SubjectPerformanceWidgetProps
                 <h3 className="text-[16px] font-bold text-gray-800">Performance by Subject</h3>
 
                 {/* Dropdown for Subjects */}
-                <div className="relative group w-full sm:w-auto">
-                    <button className="text-[12px] font-bold text-blue-600 flex items-center justify-between w-full sm:w-auto bg-blue-50 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-100 transition-colors">
-                        {selectedSubject} <ChevronDown className="h-3 w-3 ml-1" />
+                <div className="relative w-full sm:w-auto" ref={dropdownRef}>
+                    <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="text-[12px] font-bold text-blue-600 flex items-center justify-between w-full sm:w-auto bg-blue-50 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-100 transition-colors"
+                    >
+                        {selectedSubject} <ChevronDown className={`h-3 w-3 ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
-                    {/* Simple Dropdown Content */}
-                    <div className="absolute right-0 top-full mt-2 w-full sm:w-40 bg-white rounded-xl shadow-xl border border-gray-100 hidden group-hover:block z-20 p-1">
-                        {data.metrics.map(metric => (
-                            <div
-                                key={metric.subject}
-                                onClick={() => setSelectedSubject(metric.subject)}
-                                className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 rounded-lg cursor-pointer font-medium"
-                            >
-                                {metric.subject}
-                            </div>
-                        ))}
-                    </div>
+                    {/* Dropdown Content */}
+                    {isDropdownOpen && (
+                        <div className="absolute right-0 top-full mt-2 w-full sm:w-40 bg-white rounded-xl shadow-xl border border-gray-100 z-20 p-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                            {data.metrics.map(metric => (
+                                <div
+                                    key={metric.subject}
+                                    onClick={() => handleSubjectSelect(metric.subject)}
+                                    className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 rounded-lg cursor-pointer font-medium transition-colors"
+                                >
+                                    {metric.subject}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 

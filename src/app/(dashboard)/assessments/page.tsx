@@ -1,172 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronRight, Check, Loader2 } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { ArrowLeft, ChevronRight, Loader2, AlertCircle, Check } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getAssessmentSubjects } from "@/services/assessment";
-import { Subject, PerformanceLevel } from "@/types/assessment";
-
-const performanceColors: Record<PerformanceLevel, string> = {
-    Excellent: "text-green-500",
-    Average: "text-orange-500",
-    Poor: "text-red-500",
-};
-
-const performanceBgColors: Record<PerformanceLevel, string> = {
-    Excellent: "bg-green-500",
-    Average: "bg-orange-500",
-    Poor: "bg-red-500",
-};
-
-// --- Components ---
-
-function SubjectCheckbox({
-    subject,
-    isSelected,
-    onToggle,
-}: {
-    subject: Subject;
-    isSelected: boolean;
-    onToggle: () => void;
-}) {
-    return (
-        <div
-            onClick={onToggle}
-            className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
-        >
-            <div
-                className={cn(
-                    "h-5 w-5 rounded border flex items-center justify-center transition-colors",
-                    isSelected ? "bg-[#6366f1] border-[#6366f1]" : "border-gray-300 bg-white"
-                )}
-            >
-                {isSelected && <Check className="h-3.5 w-3.5 text-white" />}
-            </div>
-            <span className="text-sm font-medium text-gray-700">
-                {subject.name} <span className={performanceColors[subject.performance]}>({subject.score}%)</span>
-            </span>
-        </div>
-    );
-}
-
-function ChapterAccordion({
-    subject,
-    selectedChapters,
-    onToggleChapter,
-    onSelectAllChapters,
-}: {
-    subject: Subject;
-    selectedChapters: string[];
-    onToggleChapter: (id: string) => void;
-    onSelectAllChapters: (ids: string[]) => void;
-}) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [includePoor, setIncludePoor] = useState(false);
-
-    const allSelected = subject.chapters.every((ch) => selectedChapters.includes(ch.id));
-
-    return (
-        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-            <div
-                className="flex items-center justify-between p-4 bg-gray-50/50 cursor-pointer"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span className="font-semibold text-gray-800">Select {subject.name} Chapters</span>
-                <div className="flex items-center space-x-4">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setIncludePoor(!includePoor);
-                        }}
-                        className={cn(
-                            "flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium border transition-colors",
-                            includePoor
-                                ? "bg-[#6366f1]/10 text-[#6366f1] border-[#6366f1]/20"
-                                : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"
-                        )}
-                    >
-                        <div
-                            className={cn(
-                                "h-3 w-3 rounded-full border flex items-center justify-center",
-                                includePoor ? "bg-[#6366f1] border-[#6366f1]" : "border-gray-400"
-                            )}
-                        >
-                            {includePoor && <Check className="h-2 w-2 text-white" />}
-                        </div>
-                        <span>Include Poor Performed Chapters</span>
-                    </button>
-                    {isOpen ? <ChevronDown className="h-5 w-5 text-gray-400" /> : <ChevronRight className="h-5 w-5 text-gray-400" />}
-                </div>
-            </div>
-
-            {isOpen && (
-                <div className="p-4 border-t border-gray-100">
-                    <div className="flex items-center space-x-2 mb-4 p-2 bg-gray-50 rounded-lg w-fit">
-                        <div
-                            onClick={() => {
-                                const ids = subject.chapters.map((c) => c.id);
-                                onSelectAllChapters(allSelected ? [] : ids);
-                            }}
-                            className={cn(
-                                "h-5 w-5 rounded border flex items-center justify-center cursor-pointer transition-colors",
-                                allSelected ? "bg-[#6366f1] border-[#6366f1]" : "border-gray-300 bg-white"
-                            )}
-                        >
-                            {allSelected && <Check className="h-3.5 w-3.5 text-white" />}
-                        </div>
-                        <span className="text-sm font-medium text-gray-700 cursor-pointer" onClick={() => onSelectAllChapters(allSelected ? [] : subject.chapters.map(c => c.id))}>All</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-1">
-                        {subject.chapters.map((chapter) => {
-                            const isSelected = selectedChapters.includes(chapter.id);
-                            return (
-                                <div
-                                    key={chapter.id}
-                                    onClick={() => onToggleChapter(chapter.id)}
-                                    className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer group"
-                                >
-                                    <div
-                                        className={cn(
-                                            "h-5 w-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                                            isSelected ? "bg-gray-800 border-gray-800" : "border-gray-300 group-hover:border-gray-400"
-                                        )}
-                                    >
-                                        {isSelected && <Check className="h-3.5 w-3.5 text-white" />}
-                                    </div>
-                                    <span className="text-sm text-gray-600">{chapter.name}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
+import { Subject } from "@/types/assessment";
+import { SubjectCheckbox, ChapterAccordion } from "@/components/assessment/AssessmentSelection";
 
 export default function SmartAssessmentPage() {
     const [difficulty, setDifficulty] = useState("Advanced");
     const [timeLimit, setTimeLimit] = useState("30");
     const [subjectsData, setSubjectsData] = useState<Subject[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
     const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
 
     React.useEffect(() => {
         async function loadSubjects() {
             try {
+                setLoading(true);
                 const data = await getAssessmentSubjects();
                 setSubjectsData(data);
-                // Select all by default or strictly specific ones if desired
+
+                // Default: Select all subjects and their chapters
                 setSelectedSubjectIds(data.map(s => s.id));
-                // Mock initial chapter selection logic if needed
-                if (data.find(s => s.id === "social_science")) {
-                    setSelectedChapters(["ss-1", "ss-2"]);
-                }
+                const allChapterIds = data.flatMap(s => s.chapters.map(c => c.id));
+                setSelectedChapters(allChapterIds);
             } catch (err) {
                 console.error("Failed to load subjects", err);
+                setError("Failed to load assessment configuration. Please try again.");
             } finally {
                 setLoading(false);
             }
@@ -188,8 +52,31 @@ export default function SmartAssessmentPage() {
         }
     };
 
-    const selectedSubjects = subjectsData.filter((s) => selectedSubjectIds.includes(s.id));
-    const totalQuestions = selectedSubjects.length * 10; // Mock calculation
+    const selectedSubjects = useMemo(() =>
+        subjectsData.filter((s) => selectedSubjectIds.includes(s.id)),
+        [subjectsData, selectedSubjectIds]);
+
+    const totalQuestions = useMemo(() => {
+        let count = 0;
+        selectedSubjects.forEach(sub => {
+            sub.chapters.forEach(ch => {
+                if (selectedChapters.includes(ch.id)) {
+                    count += ch.questionCount || 0;
+                }
+            });
+        });
+        return count;
+    }, [selectedSubjects, selectedChapters]);
+
+    // Count selected chapters strictly for visible/active subjects
+    const activeSelectedChapterCount = useMemo(() => {
+        return subjectsData
+            .filter(s => selectedSubjectIds.includes(s.id))
+            .flatMap(s => s.chapters)
+            .filter(c => selectedChapters.includes(c.id))
+            .length;
+    }, [subjectsData, selectedSubjectIds, selectedChapters]);
+
 
     if (loading) {
         return (
@@ -202,26 +89,44 @@ export default function SmartAssessmentPage() {
         );
     }
 
+    if (error) {
+        return (
+            <div className="min-h-screen bg-[#fafbfc] flex items-center justify-center p-4">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-red-100 flex flex-col items-center text-center max-w-sm">
+                    <AlertCircle className="h-10 w-10 text-red-500 mb-3" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Error Loading Data</h3>
+                    <p className="text-gray-600 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-[#fafbfc] p-6 lg:p-8 space-y-8 font-sans">
+        <div className="min-h-screen bg-[#fafbfc] p-3 md:p-6 lg:p-8 space-y-5 md:space-y-8 font-sans">
             {/* Header */}
-            <div className="flex items-center space-x-4 mb-2">
+            <div className="flex items-center space-x-3 md:space-x-4 mb-2">
                 <Link href="/dashboard" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <ArrowLeft className="h-6 w-6 text-gray-600" />
+                    <ArrowLeft className="h-5 w-5 md:h-6 md:w-6 text-gray-600" />
                 </Link>
-                <h1 className="text-2xl font-bold text-gray-900">AI Smart Assessment</h1>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">AI Smart Assessment</h1>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col lg:flex-row gap-5 lg:gap-8">
                 {/* Main Content */}
                 <div className="flex-1 space-y-8">
                     {/* Controls Section */}
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 space-y-4 md:space-y-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                             {/* Difficulty */}
                             <div className="space-y-3">
                                 <label className="text-sm font-semibold text-gray-700">Assessment Difficulty Level:</label>
-                                <div className="flex items-center space-x-6">
+                                <div className="flex flex-wrap items-center gap-4 md:gap-6">
                                     {["Easy", "Intermediate", "Advanced"].map((level) => (
                                         <label key={level} className="flex items-center space-x-2 cursor-pointer group">
                                             <div className="relative flex items-center justify-center">
@@ -246,14 +151,14 @@ export default function SmartAssessmentPage() {
                             {/* Time Limit */}
                             <div className="space-y-3">
                                 <label className="text-sm font-semibold text-gray-700">Assessment Time Limit In Minutes:</label>
-                                <div className="flex items-center space-x-3">
+                                <div className="flex flex-wrap items-center gap-3">
                                     <div className="flex items-center">
                                         <input
                                             type="number"
                                             value={timeLimit === "unlimited" ? "" : timeLimit}
                                             onChange={(e) => setTimeLimit(e.target.value)}
                                             placeholder="90"
-                                            className="border border-gray-300 rounded px-3 py-1.5 w-16 text-center text-sm font-medium focus:outline-none focus:border-[#6366f1]"
+                                            className="border border-gray-300 rounded px-3 py-1.5 w-16 text-center text-base md:text-sm font-medium focus:outline-none focus:border-[#6366f1]"
                                         />
                                         <span className="ml-2 text-sm text-gray-500">Mins</span>
                                     </div>
@@ -272,25 +177,25 @@ export default function SmartAssessmentPage() {
 
                         {/* Subjects Selection */}
                         <div className="space-y-4 pt-4 border-t border-gray-100">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-900">Select Subjects</h3>
-                                <div className="flex items-center space-x-4 text-xs">
-                                    <div className="flex items-center space-x-1.5">
-                                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                                        <span className="text-gray-500">Excellent Performance</span>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+                                <h3 className="text-base md:text-lg font-semibold text-gray-900">Select Subjects</h3>
+                                <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs">
+                                    <div className="flex items-center gap-1 md:gap-1.5">
+                                        <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+                                        <span className="text-gray-500 whitespace-nowrap">Excellent Performance</span>
                                     </div>
-                                    <div className="flex items-center space-x-1.5">
-                                        <div className="h-2 w-2 rounded-full bg-orange-500" />
-                                        <span className="text-gray-500">Average Performance</span>
+                                    <div className="flex items-center gap-1 md:gap-1.5">
+                                        <div className="h-2 w-2 rounded-full bg-orange-500 shrink-0" />
+                                        <span className="text-gray-500 whitespace-nowrap">Average Performance</span>
                                     </div>
-                                    <div className="flex items-center space-x-1.5">
-                                        <div className="h-2 w-2 rounded-full bg-red-500" />
-                                        <span className="text-gray-500">Poor Performance</span>
+                                    <div className="flex items-center gap-1 md:gap-1.5">
+                                        <div className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
+                                        <span className="text-gray-500 whitespace-nowrap">Poor Performance</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                 <div
                                     onClick={toggleAllSubjects}
                                     className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
@@ -339,67 +244,69 @@ export default function SmartAssessmentPage() {
                 </div>
 
                 {/* Sidebar */}
-                <div className="w-full lg:w-[380px] space-y-4">
-                    {/* Summary Card */}
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-8">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6">Assessment Summary</h3>
+                <div className="w-full lg:w-[380px]">
+                    <div className="space-y-4 lg:sticky lg:top-8">
+                        {/* Summary Card */}
+                        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
+                            <h3 className="text-base md:text-lg font-bold text-gray-900 mb-4 md:mb-6">Assessment Summary</h3>
 
-                        <div className="space-y-6">
-                            <div>
-                                <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">SUBJECTS</p>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-900">
-                                        {selectedSubjects.slice(0, 2).map(s => s.name).join(", ")}
-                                        {selectedSubjects.length > 2 && <span className="text-[#ff5757] ml-1">+{selectedSubjects.length - 2}</span>}
-                                    </span>
-                                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                                </div>
-                            </div>
-
-                            <div className="border-t border-gray-50 pt-4">
-                                <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">TOTAL NO OF QUESTIONS</p>
-                                <p className="text-xl font-bold text-gray-900">{totalQuestions}</p>
-                            </div>
-
-                            <div className="border-t border-gray-50 pt-4">
-                                <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">DIFFICULTY LEVEL</p>
-                                <p className="text-sm font-bold text-gray-900">{difficulty}</p>
-                            </div>
-
-                            <div className="border-t border-gray-50 pt-4">
-                                <div className="flex items-center justify-between cursor-pointer">
-                                    <div>
-                                        <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">CHAPTERS</p>
-                                        <p className="text-xl font-bold text-gray-900">{selectedChapters.length}</p>
+                            <div className="space-y-4 md:space-y-6">
+                                <div>
+                                    <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">SUBJECTS</p>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-medium text-gray-900">
+                                            {selectedSubjects.slice(0, 2).map(s => s.name).join(", ")}
+                                            {selectedSubjects.length > 2 && <span className="text-[#ff5757] ml-1">+{selectedSubjects.length - 2}</span>}
+                                        </span>
+                                        <ChevronRight className="h-4 w-4 text-gray-400" />
                                     </div>
-                                    <ChevronRight className="h-4 w-4 text-gray-400" />
                                 </div>
+
+                                <div className="border-t border-gray-50 pt-4">
+                                    <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">TOTAL NO OF QUESTIONS</p>
+                                    <p className="text-xl font-bold text-gray-900">{totalQuestions}</p>
+                                </div>
+
+                                <div className="border-t border-gray-50 pt-4">
+                                    <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">DIFFICULTY LEVEL</p>
+                                    <p className="text-sm font-bold text-gray-900">{difficulty}</p>
+                                </div>
+
+                                <div className="border-t border-gray-50 pt-4">
+                                    <div className="flex items-center justify-between cursor-pointer">
+                                        <div>
+                                            <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wide mb-1">CHAPTERS</p>
+                                            <p className="text-xl font-bold text-gray-900">{activeSelectedChapterCount}</p>
+                                        </div>
+                                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                                    </div>
+                                </div>
+
+                                <Link href="/assessments/21/take" className="block w-full">
+                                    <button className="w-full py-3.5 bg-[#5b5bd6] hover:bg-[#4f4fbe] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all transform active:scale-95">
+                                        START ASSESSMENT
+                                    </button>
+                                </Link>
                             </div>
-
-                            <Link href="/assessments/21/take" className="block w-full">
-                                <button className="w-full py-3.5 bg-[#5b5bd6] hover:bg-[#4f4fbe] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all transform active:scale-95">
-                                    START ASSESSMENT
-                                </button>
-                            </Link>
                         </div>
-                    </div>
 
-                    {/* Secondary Actions */}
-                    <Link href="/assessments/results" className="block w-full">
-                        <button className="w-full bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
-                            <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW PREVIOUS RESULTS</span>
-                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#6366f1]/10">
+                        {/* Secondary Actions */}
+                        <Link href="/assessments/results" className="block w-full">
+                            <button className="w-full bg-white p-3 md:p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
+                                <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW PREVIOUS RESULTS</span>
+                                <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#6366f1]/10">
+                                    <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#6366f1]" />
+                                </div>
+                            </button>
+                        </Link>
+
+                        <button className="w-full bg-white p-3 md:p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
+                            <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW MARKED QUESTIONS</span>
+                            <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#6366f1]/10">
                                 <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#6366f1]" />
                             </div>
                         </button>
-                    </Link>
-
-                    <button className="w-full bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:border-[#6366f1] hover:shadow-md transition-all group">
-                        <span className="font-bold text-gray-800 text-sm group-hover:text-[#6366f1] italic">VIEW MARKED QUESTIONS</span>
-                        <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#6366f1]/10">
-                            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#6366f1]" />
-                        </div>
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>

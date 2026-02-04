@@ -2,6 +2,7 @@ import React from "react";
 import { Search, MapPin, Clock, Users, BarChart3, ChevronRight, FileText, CheckCircle2, Ticket, Wind, Cpu, Factory, Building2, Plane } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ExcursionHero } from "@/components/excursion/ExcursionHero";
 
 // Mock Data matching the screenshot
 const excursions = [
@@ -92,11 +93,13 @@ export default function ExcursionPage() {
         <div className="min-h-screen bg-[#fafafa] p-6 font-sans">
             {/* Header */}
             <div className="mb-8">
-                <div className="flex items-center gap-2 text-gray-400 mb-2">
-                    <Link href="/dashboard" className="hover:text-gray-600 cursor-pointer"><ChevronRight className="w-4 h-4 rotate-180" /></Link>
-                    <h1 className="text-2xl font-bold text-gray-900">Excursion</h1>
+                <div className="flex items-center gap-2 text-gray-400 mb-4">
+                    <Link href="/dashboard" className="flex items-center gap-1 hover:text-gray-600 cursor-pointer transition-colors">
+                        <ChevronRight className="w-4 h-4 rotate-180" />
+                        <span className="text-sm font-medium">Back to Dashboard</span>
+                    </Link>
                 </div>
-                <p className="text-gray-500 text-sm">Discover educational excursion opportunities and book visits for your students</p>
+                <ExcursionHero />
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
@@ -228,7 +231,7 @@ export default function ExcursionPage() {
 
                                 {/* Actions */}
                                 <div className="flex justify-end gap-3">
-                                    <button className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
+                                    <button suppressHydrationWarning className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
                                         View Details
                                     </button>
                                     {item.hasConsent && (
@@ -237,10 +240,10 @@ export default function ExcursionPage() {
                                         </Link>
                                     )}
                                     {item.company === "Google" && (
-                                        <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"><CheckCircle2 className="w-5 h-5 text-gray-400" /></button>
+                                        <button suppressHydrationWarning className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"><CheckCircle2 className="w-5 h-5 text-gray-400" /></button>
                                     )}
                                     {item.company === "Adani Green" && (
-                                        <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"><CheckCircle2 className="w-5 h-5 text-gray-400" /></button>
+                                        <button suppressHydrationWarning className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"><CheckCircle2 className="w-5 h-5 text-gray-400" /></button>
                                     )}
                                 </div>
 
@@ -252,7 +255,7 @@ export default function ExcursionPage() {
                     <div className="flex justify-center items-center gap-2 pt-8">
                         <span className="text-sm text-gray-400 mr-2">Prev</span>
                         {[1, 2, 3, 4, 5, 6, 7].map(num => (
-                            <button key={num} className={cn("w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors", num === 1 ? "bg-indigo-100 text-indigo-600" : "text-gray-500 hover:bg-gray-100")}>
+                            <button suppressHydrationWarning key={num} className={cn("w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors", num === 1 ? "bg-indigo-100 text-indigo-600" : "text-gray-500 hover:bg-gray-100")}>
                                 {num}
                             </button>
                         ))}
