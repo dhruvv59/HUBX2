@@ -170,11 +170,11 @@ function FilterSidebar({ filters, onFilterChange, isMobileDrawerOpen, onCloseMob
 
             {/* Drawer */}
             <div className={cn(
-                "lg:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-[24px] shadow-2xl z-50 transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto",
-                isMobileDrawerOpen ? "translate-y-0" : "translate-y-full"
+                "lg:hidden fixed top-0 right-0 h-full w-[85%] max-w-[320px] bg-white shadow-2xl z-50 transition-transform duration-300 ease-out overflow-y-auto",
+                isMobileDrawerOpen ? "translate-x-0" : "translate-x-full"
             )}>
                 {/* Drawer Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-100 p-4 rounded-t-[24px] z-10">
+                <div className="sticky top-0 bg-white border-b border-gray-100 p-4 z-10">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold text-gray-900">Filters</h2>
                         <button

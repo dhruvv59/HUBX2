@@ -5,6 +5,7 @@ export interface QuestionBankFilter {
     difficulty?: string[];
     rating?: string;
     addedTime?: string;
+    search?: string;
 }
 
 export const MOCK_BANK_QUESTIONS: Question[] = [
@@ -57,6 +58,16 @@ export const getBankQuestions = async (filters: QuestionBankFilter): Promise<Que
     // Simple mock filtering
     if (filters.difficulty && filters.difficulty.length > 0 && !filters.difficulty.includes("All")) {
         filtered = filtered.filter(q => filters.difficulty?.includes(q.difficulty));
+    }
+
+    if (filters.search) {
+        const query = filters.search.toLowerCase().trim();
+        if (query) {
+            filtered = filtered.filter(q =>
+                q.content.toLowerCase().includes(query) ||
+                (q.solution && q.solution.toLowerCase().includes(query))
+            );
+        }
     }
 
     return filtered;

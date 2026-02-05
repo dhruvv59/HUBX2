@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import { ChevronRight, Sparkles, ArrowRight } from "lucide-react";
 
-interface FilterSectionProps {
+export interface FilterSectionProps {
     title: string;
     options: string[];
     selected: string;
     onChange: (value: string) => void;
 }
 
-function FilterSection({ title, options, selected, onChange }: FilterSectionProps) {
+export function FilterSection({ title, options, selected, onChange }: FilterSectionProps) {
     return (
         <div className="mb-8">
             <h3 className="text-sm font-bold text-gray-900 mb-4">{title}</h3>
@@ -35,11 +35,17 @@ function FilterSection({ title, options, selected, onChange }: FilterSectionProp
     );
 }
 
-export function FilterSidebar() {
-    const [subject, setSubject] = useState("All");
-    const [standard, setStandard] = useState("9th");
-    const [difficulty, setDifficulty] = useState("Intermediate");
-    const [rating, setRating] = useState("4 & above");
+interface FilterSidebarProps {
+    filters: {
+        subject: string;
+        standard: string;
+        difficulty: string;
+        rating: string;
+    };
+    onFilterChange: (key: string, value: string) => void;
+}
+
+export function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
 
     return (
         <div className="w-[280px] flex-shrink-0 pt-2">
@@ -48,26 +54,26 @@ export function FilterSidebar() {
                 <FilterSection
                     title="Subjects"
                     options={["All", "Science", "Mathematics"]}
-                    selected={subject}
-                    onChange={setSubject}
+                    selected={filters.subject}
+                    onChange={(val) => onFilterChange("subject", val)}
                 />
                 <FilterSection
                     title="Standard"
                     options={["All", "8th", "9th", "10th"]}
-                    selected={standard}
-                    onChange={setStandard}
+                    selected={filters.standard}
+                    onChange={(val) => onFilterChange("standard", val)}
                 />
                 <FilterSection
                     title="Difficulty Level"
                     options={["All", "Beginner", "Intermediate", "Advanced"]}
-                    selected={difficulty}
-                    onChange={setDifficulty}
+                    selected={filters.difficulty}
+                    onChange={(val) => onFilterChange("difficulty", val)}
                 />
                 <FilterSection
                     title="Rating"
-                    options={["4 ★ & above", "Most Popular"]}
-                    selected={rating}
-                    onChange={setRating}
+                    options={["All", "4 ★ & above", "Most Popular"]}
+                    selected={filters.rating}
+                    onChange={(val) => onFilterChange("rating", val)}
                 />
             </div>
 

@@ -32,7 +32,7 @@ export default function ExcursionPage() {
                         onClick={() => setShowMobileFilters(false)}
                     />
                     {/* Sidebar Container */}
-                    <div className="absolute left-0 top-0 h-full w-[280px] bg-white shadow-2xl overflow-y-auto animate-in slide-in-from-left duration-300">
+                    <div className="absolute right-0 top-0 h-full w-[280px] bg-white shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300">
                         <div className="p-4 flex justify-between items-center border-b border-gray-100 mb-2">
                             <h2 className="font-bold text-gray-900">Filters</h2>
                             <button

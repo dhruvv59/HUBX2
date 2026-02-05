@@ -16,7 +16,7 @@ const MOCK_PAPERS: PrivatePaper[] = [
         plays: 159,
         teacher: {
             name: "Mrunal Sir",
-            avatar: "/assets/images/avatar-male.png"
+            avatar: "/assets/images/avatar-male.svg"
         }
     },
     {
@@ -34,7 +34,7 @@ const MOCK_PAPERS: PrivatePaper[] = [
         plays: 92,
         teacher: {
             name: "Priya Ma'am",
-            avatar: "/assets/images/avatar-female.png"
+            avatar: "/assets/images/avatar-female.svg"
         }
     },
     {
@@ -52,7 +52,7 @@ const MOCK_PAPERS: PrivatePaper[] = [
         plays: 340,
         teacher: {
             name: "Rahul Sir",
-            avatar: "/assets/images/avatar-male.png"
+            avatar: "/assets/images/avatar-male.svg"
         }
     },
     {
@@ -70,7 +70,7 @@ const MOCK_PAPERS: PrivatePaper[] = [
         plays: 210,
         teacher: {
             name: "Mrunal Sir",
-            avatar: "/assets/images/avatar-male.png"
+            avatar: "/assets/images/avatar-male.svg"
         }
     },
     {
@@ -88,7 +88,7 @@ const MOCK_PAPERS: PrivatePaper[] = [
         plays: 60,
         teacher: {
             name: "Sonia Ma'am",
-            avatar: "/assets/images/avatar-female.png"
+            avatar: "/assets/images/avatar-female.svg"
         }
     },
     {
@@ -106,7 +106,7 @@ const MOCK_PAPERS: PrivatePaper[] = [
         plays: 85,
         teacher: {
             name: "Amit Sir",
-            avatar: "/assets/images/avatar-male.png"
+            avatar: "/assets/images/avatar-male.svg"
         }
     }
 ];

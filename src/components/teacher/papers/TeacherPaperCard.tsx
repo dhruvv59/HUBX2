@@ -30,19 +30,19 @@ export function TeacherPaperCard({ paper }: { paper: Paper }) {
             {/* Header: Title, Price, Menu */}
             <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-bold text-gray-900">{paper.title}</h3>
-                        <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+                        <h3 className="text-lg font-bold text-gray-900 leading-tight">{paper.title}</h3>
+                        <div className="flex items-center gap-2 flex-wrap shrink-0">
                             {/* Trending Icon */}
                             {paper.isTrending && (
                                 <div className="h-8 w-8 flex items-center justify-center rounded-full bg-purple-50 text-purple-600">
                                     <TrendingUp className="w-4 h-4" />
                                 </div>
                             )}
-                            <span className="px-2 py-1 rounded bg-[#f3f4f6] text-xs font-bold text-gray-600 border border-gray-200">
+                            <span className="px-2 py-1 rounded bg-[#f3f4f6] text-xs font-bold text-gray-600 border border-gray-200 whitespace-nowrap">
                                 Std {paper.standard}
                             </span>
-                            <span className="px-3 py-1 rounded bg-[#fef9c3] text-sm font-bold text-gray-800 border border-[#fde047]">
+                            <span className="px-3 py-1 rounded bg-[#fef9c3] text-sm font-bold text-gray-800 border border-[#fde047] whitespace-nowrap">
                                 ₹ {paper.price}
                             </span>
                             <button className="text-gray-400 hover:text-gray-600 p-1">
@@ -74,7 +74,7 @@ export function TeacherPaperCard({ paper }: { paper: Paper }) {
             <div className="flex items-center flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-gray-500 mb-6">
                 <div className="flex items-center gap-1.5 text-orange-500">
                     <Star className="w-3.5 h-3.5 fill-current" />
-                    <span className="text-gray-700">{paper.rating}</span>
+                    <span className="text-gray-700">{Number(paper.rating).toFixed(1)}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                     <HelpCircle className="w-3.5 h-3.5" />

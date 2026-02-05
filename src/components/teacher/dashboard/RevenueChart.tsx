@@ -24,31 +24,44 @@ interface RevenueChartProps {
     data: ChartDataPoint[];
 }
 
-function DatePickerButton({ label, onClick }: { label: string; onClick: () => void }) {
+function DatePickerButton({ label, onClick, className }: { label: string; onClick?: () => void; className?: string }) {
     return (
-        <button
+        <div
             onClick={onClick}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-600 transition-colors cursor-pointer select-none ${className || 'hover:bg-gray-50'}`}
         >
             <Calendar className="w-3 h-3 text-gray-400" />
             {label}
             <ChevronDown className="w-3 h-3 text-gray-400" />
-        </button>
+        </div>
     );
 }
 
 export function RevenueChart({ data: initialData }: RevenueChartProps) {
     const [timePeriod, setTimePeriod] = useState<TimePeriod>('1month');
     const [dateRange, setDateRange] = useState<DateRange>({
-        from: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split('T')[0],
-        to: new Date().toISOString().split('T')[0]
+        from: '',
+        to: ''
     });
     const [chartData, setChartData] = useState<ChartDataPoint[]>(initialData);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Initialize date range on client side to avoid hydration mismatch
+    useEffect(() => {
+        const today = new Date();
+        const fromDate = new Date(new Date().setMonth(today.getMonth() - 1));
+
+        setDateRange({
+            from: fromDate.toISOString().split('T')[0],
+            to: today.toISOString().split('T')[0]
+        });
+    }, []);
+
     // Fetch data when filters change
     const fetchRevenueData = async (period: TimePeriod, range: DateRange) => {
+        if (!range.from || !range.to) return; // Don't fetch if dates aren't set yet
+
         setIsLoading(true);
         setError(null);
 
@@ -126,6 +139,7 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
 
     // Format date for display
     const formatDate = (dateStr: string) => {
+        if (!dateStr) return 'Select Date';
         const date = new Date(dateStr);
         return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.');
     };
@@ -135,11 +149,46 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
                 <h3 className="text-base font-bold text-gray-800">Revenue Analysis</h3>
                 <div className="flex flex-wrap gap-2 items-center">
+                    {/* Date Range Pickers */}
+                    <div className="flex items-center gap-2 sm:mr-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase whitespace-nowrap">From</span>
+                            <div className="relative flex-1 sm:flex-none">
+                                <input
+                                    type="date"
+                                    value={dateRange.from}
+                                    onChange={(e) => handleDateChange('from', e.target.value)}
+                                    max={dateRange.to}
+                                    className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                                />
+                                <DatePickerButton
+                                    label={formatDate(dateRange.from)}
+                                    className="peer-hover:bg-gray-50"
+                                />
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase whitespace-nowrap">To</span>
+                            <div className="relative flex-1 sm:flex-none">
+                                <input
+                                    type="date"
+                                    value={dateRange.to}
+                                    onChange={(e) => handleDateChange('to', e.target.value)}
+                                    min={dateRange.from}
+                                    max={new Date().toISOString().split('T')[0]}
+                                    className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                                />
+                                <DatePickerButton
+                                    label={formatDate(dateRange.to)}
+                                    className="peer-hover:bg-gray-50"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Time Period Buttons */}
-                    <div className="flex bg-[#f8f9fa] rounded-lg p-1 border border-gray-100">
+                    <div className="flex bg-[#f8f9fa] rounded-lg p-1 border border-gray-100 overflow-x-auto max-w-[100vw] sm:max-w-none custom-scrollbar">
                         <button
                             onClick={() => handlePeriodChange('1month')}
-                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '1month'
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all whitespace-nowrap ${timePeriod === '1month'
                                 ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
                                 : 'text-gray-500 hover:bg-gray-200'
                                 }`}
@@ -148,7 +197,7 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
                         </button>
                         <button
                             onClick={() => handlePeriodChange('3months')}
-                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '3months'
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all whitespace-nowrap ${timePeriod === '3months'
                                 ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
                                 : 'text-gray-500 hover:bg-gray-200'
                                 }`}
@@ -157,42 +206,13 @@ export function RevenueChart({ data: initialData }: RevenueChartProps) {
                         </button>
                         <button
                             onClick={() => handlePeriodChange('6months')}
-                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${timePeriod === '6months'
+                            className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all whitespace-nowrap ${timePeriod === '6months'
                                 ? 'bg-[#e0e7ff] text-[#4338ca] shadow-sm'
                                 : 'text-gray-500 hover:bg-gray-200'
                                 }`}
                         >
                             Last 6 Months
                         </button>
-                    </div>
-
-                    {/* Date Range Pickers */}
-                    <div className="flex items-center gap-2 sm:ml-2">
-                        <div className="hidden sm:flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">From</span>
-                            <div className="relative">
-                                <input
-                                    type="date"
-                                    value={dateRange.from}
-                                    onChange={(e) => handleDateChange('from', e.target.value)}
-                                    max={dateRange.to}
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                                <DatePickerButton label={formatDate(dateRange.from)} onClick={() => { }} />
-                            </div>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">To</span>
-                            <div className="relative">
-                                <input
-                                    type="date"
-                                    value={dateRange.to}
-                                    onChange={(e) => handleDateChange('to', e.target.value)}
-                                    min={dateRange.from}
-                                    max={new Date().toISOString().split('T')[0]}
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                                <DatePickerButton label={formatDate(dateRange.to)} onClick={() => { }} />
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

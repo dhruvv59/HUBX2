@@ -2,17 +2,20 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 
 interface QuestionBankFiltersProps {
     filters: any;
     onFilterChange: (key: string, value: any) => void;
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
-export function QuestionBankFilters({ filters, onFilterChange }: QuestionBankFiltersProps) {
-    return (
-        <div className="w-[280px] shrink-0 bg-white rounded-2xl border border-[#f3e8ff] p-6 h-fit shadow-sm">
+export function QuestionBankFilters({ filters, onFilterChange, isOpen, onClose }: QuestionBankFiltersProps) {
+    const FilterContent = () => (
+        <div className="space-y-6">
             {/* Subjects */}
-            <div className="mb-8 pl-1">
+            <div className="pl-1">
                 <h3 className="text-sm font-bold text-gray-900 mb-4">Subjects</h3>
                 <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer group">
@@ -28,7 +31,7 @@ export function QuestionBankFilters({ filters, onFilterChange }: QuestionBankFil
             </div>
 
             {/* Difficulty Level */}
-            <div className="mb-8">
+            <div>
                 <h3 className="text-sm font-bold text-gray-900 mb-4">Difficulty Level</h3>
                 <div className="space-y-3">
                     {["All", "Beginner", "Intermediate", "Advanced"].map((level) => (
@@ -55,7 +58,7 @@ export function QuestionBankFilters({ filters, onFilterChange }: QuestionBankFil
             </div>
 
             {/* Rating */}
-            <div className="mb-8">
+            <div>
                 <h3 className="text-sm font-bold text-gray-900 mb-4">Rating</h3>
                 <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer group">
@@ -122,5 +125,39 @@ export function QuestionBankFilters({ filters, onFilterChange }: QuestionBankFil
                 </div>
             </div>
         </div>
+    );
+
+    return (
+        <>
+            {/* Desktop View */}
+            <div className="hidden lg:block w-[280px] shrink-0 bg-white rounded-2xl border border-[#f3e8ff] p-6 h-fit shadow-sm">
+                <FilterContent />
+            </div>
+
+            {/* Mobile Drawer */}
+            {onClose && (
+                <>
+                    <div className={cn(
+                        "lg:hidden fixed inset-0 z-50 bg-black/50 transition-opacity duration-300",
+                        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                    )} onClick={onClose} />
+
+                    <div className={cn(
+                        "lg:hidden fixed top-0 right-0 h-full w-[85%] max-w-[320px] bg-white shadow-2xl z-50 transition-transform duration-300 ease-out overflow-y-auto",
+                        isOpen ? "translate-x-0" : "translate-x-full"
+                    )}>
+                        <div className="sticky top-0 bg-white border-b border-gray-100 p-4 z-10 flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+                            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <FilterContent />
+                        </div>
+                    </div>
+                </>
+            )}
+        </>
     );
 }

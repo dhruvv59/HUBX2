@@ -273,7 +273,7 @@ export default function PreviousResultsPage() {
                         />
 
                         {/* Drawer */}
-                        <div className="absolute right-0 top-0 bottom-0 w-[300px] bg-[#fafbfc] p-6 shadow-2xl overflow-y-auto transform transition-transform duration-300 ease-in-out">
+                        <div className="fixed inset-y-0 right-0 w-[300px] bg-[#fafbfc] p-6 shadow-2xl overflow-y-auto animate-slide-in-right focus:outline-none">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-xl font-bold text-gray-900">Filters</h3>
                                 <button

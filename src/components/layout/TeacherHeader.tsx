@@ -82,6 +82,7 @@ export function TeacherHeader({ onMenuClick }: TeacherHeaderProps) {
                 <button
                     onClick={onMenuClick}
                     className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg md:hidden transition-colors"
+                    suppressHydrationWarning
                 >
                     <Menu className="w-6 h-6" />
                 </button>
@@ -103,7 +104,10 @@ export function TeacherHeader({ onMenuClick }: TeacherHeaderProps) {
             {/* Right Actions */}
             <div className="flex items-center gap-3 md:gap-6 flex-shrink-0">
                 {/* Mobile Search Icon (visible when search bar is hidden) */}
-                <button className="p-2 text-gray-400 hover:text-gray-600 sm:hidden">
+                <button
+                    className="p-2 text-gray-400 hover:text-gray-600 sm:hidden"
+                    suppressHydrationWarning
+                >
                     <Search className="h-5 w-5" />
                 </button>
 
@@ -171,6 +175,7 @@ export function TeacherHeader({ onMenuClick }: TeacherHeaderProps) {
                         `}
                         aria-label="Profile menu"
                         aria-expanded={isProfileOpen}
+                        suppressHydrationWarning
                     >
                         <span className="sr-only">User Menu</span>
                         {MOCK_TEACHER.avatar ? (

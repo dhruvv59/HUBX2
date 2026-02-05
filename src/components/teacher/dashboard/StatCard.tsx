@@ -41,10 +41,10 @@ export function StatCard({ stat }: StatCardProps) {
     const currentTheme = themes[theme];
 
     return (
-        <div className={cn("bg-white p-6 rounded-2xl border-[1.5px] shadow-sm h-full flex flex-col justify-between hover:shadow-md transition-shadow", currentTheme.border)}>
+        <div className={cn("bg-white p-4 xl:p-6 rounded-2xl border-[1.5px] shadow-sm h-full flex flex-col justify-between hover:shadow-md transition-shadow", currentTheme.border)}>
             <div>
-                <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{title}</h3>
-                <div className={cn("text-[2.6rem] leading-tight font-black mb-1", currentTheme.text)}>{value}</div>
+                <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 truncate">{title}</h3>
+                <div className={cn("text-2xl sm:text-3xl xl:text-[2.6rem] leading-tight font-black mb-1 truncate", currentTheme.text)}>{value}</div>
 
                 <div className="flex items-center gap-1 text-sm font-bold text-gray-700 mb-6">
                     <span className={cn("flex items-center", currentTheme.arrow)}>
@@ -59,7 +59,7 @@ export function StatCard({ stat }: StatCardProps) {
                 <div className={cn("absolute top-0 left-0 w-full h-[1.5px]", currentTheme.divider)}></div>
 
                 <p className="text-[10px] text-gray-400 uppercase font-bold mb-1 tracking-wider">LAST MONTH</p>
-                <p className="text-xl font-black text-gray-800 italic">{lastMonthValue}</p>
+                <p className="text-lg sm:text-xl font-black text-gray-800 italic">{lastMonthValue}</p>
             </div>
         </div>
     );

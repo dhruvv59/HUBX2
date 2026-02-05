@@ -260,35 +260,156 @@ function getMockDashboardData(): DashboardApiResponse & { [key: string]: any } {
  * - Authentication: JWT token in Authorization header (handled by http client)
  * - Cache: Consider adding React Query or SWR for automatic caching
  */
+
+/**
+ * STREAMING API FUNCTIONS
+ * =========================
+ * Granular data fetching for progressive loading
+ */
+
+export async function getStudentProfile(): Promise<{ name: string; avatar: string }> {
+    // Simulate delay for streaming demo
+    await new Promise(r => setTimeout(r, 200));
+
+    if (USE_MOCK_DATA) {
+        const data = getMockDashboardData();
+        return {
+            name: data.student.fullName,
+            avatar: data.student.avatarUrl || ""
+        };
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return { name: res.student.fullName, avatar: res.student.avatarUrl };
+}
+
+export async function getDashboardStats() {
+    await new Promise(r => setTimeout(r, 400));
+    if (USE_MOCK_DATA) {
+        const data = getMockDashboardData();
+        return transformToDashboardData(data).stats;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return transformToDashboardData(res).stats;
+}
+
+export async function getExcursionData() {
+    await new Promise(r => setTimeout(r, 600));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().latestExcursion;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.latestExcursion;
+}
+
+export async function getPapersList() {
+    await new Promise(r => setTimeout(r, 800));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().papers;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.papers;
+}
+
+export async function getPerformanceMetrics() {
+    await new Promise(r => setTimeout(r, 700));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().performanceData;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.performanceData;
+}
+
+export async function getSubjectPerformance() {
+    await new Promise(r => setTimeout(r, 900));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().subjectPerformance;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.subjectPerformance;
+}
+
+export async function getPeerRank() {
+    await new Promise(r => setTimeout(r, 1000));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().peerRank;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.peerRank;
+}
+
+export async function getSyllabusData() {
+    await new Promise(r => setTimeout(r, 1100));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().syllabus;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.syllabus;
+}
+
+export async function getHubXTestRecommendations() {
+    await new Promise(r => setTimeout(r, 1200));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().testRecommendations;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.testRecommendations;
+}
+
+export async function getRecentActivities() {
+    await new Promise(r => setTimeout(r, 500));
+    if (USE_MOCK_DATA) {
+        return getMockDashboardData().recentActivities;
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return res.recentActivities;
+}
+
+export async function getNotificationData() {
+    await new Promise(r => setTimeout(r, 800));
+    if (USE_MOCK_DATA) {
+        const data = getMockDashboardData();
+        return {
+            notifications: data.notifications,
+            focusAreas: data.focusAreas
+        };
+    }
+    const res = await http.get<any>(DASHBOARD_ENDPOINTS.getDashboard());
+    return { notifications: res.notifications, focusAreas: res.focusAreas };
+}
+
+export async function getUpcomingExamsList() {
+    await new Promise(r => setTimeout(r, 600));
+    if (USE_MOCK_DATA) return getMockDashboardData().upcomingExams;
+    return http.get(DASHBOARD_ENDPOINTS.getUpcomingExams());
+}
+
+/**
+ * Fetches complete dashboard data (Legacy/Fallback)
+ */
 export async function getDashboardData(): Promise<DashboardData> {
-    // Development mode: Use mock data
+    // Parallel fetch for backward compatibility if used elsewhere
+    // But ideally we use the granular functions above
+
     if (USE_MOCK_DATA) {
         return new Promise((resolve) => {
             setTimeout(() => {
                 const mockData = getMockDashboardData();
                 const transformedData = transformToDashboardData(mockData);
                 resolve(transformedData);
-            }, 800); // Simulate network latency
+            }, 800);
         });
     }
 
-    // Production mode: Fetch from real API
     try {
         const apiResponse = await http.get<DashboardApiResponse & { [key: string]: any }>(
             DASHBOARD_ENDPOINTS.getDashboard()
         );
-
         return transformToDashboardData(apiResponse);
     } catch (error) {
-        // Log error for monitoring (e.g., Sentry, Datadog)
         console.error('[Dashboard Service] Failed to fetch dashboard data:', error);
-
-        // Re-throw typed errors for component-level handling
         if (error instanceof ApiError || error instanceof NetworkError) {
             throw error;
         }
-
-        // Wrap unknown errors
         throw new Error('An unexpected error occurred while loading dashboard data');
     }
 }
