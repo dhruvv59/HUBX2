@@ -166,9 +166,13 @@ export const getPrivatePapers = async (filters: PrivatePaperFilters): Promise<{ 
         // Gracefully fall back to mock data when API is not available
         // In production, this allows the app to work even if backend is down
         // Only log actual network errors, not expected "API not available" scenarios
-        if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        const isNetworkError =
+            (error instanceof TypeError && (error.message === 'Failed to fetch' || error.message === 'fetch failed')) ||
+            (error instanceof Error && (error as any).code === 'ECONNREFUSED');
+
+        if (isNetworkError) {
             // Network error - API likely not running, use mock data silently
-            console.info('API not available, using mock data for development');
+            console.info('API not available, using mock data');
         } else {
             // Actual error that should be logged
             console.error("Failed to fetch private papers:", error);

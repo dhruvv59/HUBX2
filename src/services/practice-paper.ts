@@ -231,8 +231,15 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
         );
 
         return response;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching papers:', error);
+
+        // Fallback to mock data on network errors (useful for build time / when backend is down)
+        if (error.name === 'NetworkError' || (error.code === 'ECONNREFUSED')) {
+            console.info('Falling back to mock data due to network error');
+            return getMockPapersResponse(params);
+        }
+
         throw error;
     }
 }
